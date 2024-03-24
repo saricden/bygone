@@ -1,0 +1,160 @@
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+
+:root {
+  font-size: 15px;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #321332;
+}
+
+#game {
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 20px rgba(50, 19, 50, 0.8);
+}
+
+.bg {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: bottom center;
+  opacity: 0.8;
+  filter: blur(10px);
+}
+
+.dpad,
+.btns {
+  z-index: 3;
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  transition: opacity 1s, visibility 1s;
+}
+
+.novirtual .dpad,
+.novirtual .btns {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.dpad > div,
+.btns > div {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #333;
+}
+
+.up {
+  top: 0;
+  left: 50px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.ri {
+  top: 50px;
+  right: 0;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.do {
+  bottom: 0;
+  left: 50px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.le {
+  top: 50px;
+  left: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.center {
+  top: 50px;
+  left: 50px;
+}
+
+.a,
+.b,
+.x,
+.y {
+  border-radius: 100%;
+  font-family: monospace;
+}
+
+.a {
+  bottom: 0;
+  left: 50px;
+}
+
+.b {
+  top: 50px;
+  right: 0;
+}
+
+.x {
+  top: 50px;
+  left: 0;
+}
+
+.y {
+  top: 0;
+  left: 50px;
+}
+
+@media (orientation: portrait) {
+  .dpad {
+    top: 60%;
+    left: 0;
+  }
+
+  .btns {
+    top: 60%;
+    right: 0;
+  }
+}
+
+@media (orientation: landscape) {
+  .dpad {
+    top: 35%;
+    left: 0;
+  }
+
+  .btns {
+    top: 35%;
+    right: 0;
+  }
+}
