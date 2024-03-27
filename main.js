@@ -76,19 +76,11 @@ class TestScene extends Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBackgroundColor(0xDDEEFF);
 
-    this.cameras.main.on('postrender', () => {
-      // bgCtx is my second canvas' context
-      // canvas is a reference to the
+    this.renderer.on('postrender', () => {
       bgCtx.clearRect(0, 0, 720, 720);
-      bgCtx.drawImage(canvas, 0, 0, 720, 720, 0, 0, 720, 720);
-      // console.log('post');
+      bgCtx.drawImage(canvas, 0, 0);
+      console.log('mmkay')
     });
-
-    // this.game.renderer.snapshot((base64) => {
-    //   console.log(base64);
-    // });
-
-    // console.log(this.cameras.main.followOffset);
 
     // Controller
     this.gamepad = null;
@@ -111,7 +103,7 @@ class TestScene extends Scene {
 
     this.input.keyboard.on('keydown', (e) => {
       doc.classList.add('novirtual');
-      
+
       if (e.key === '.') {
         this.actionA();
       }
@@ -168,6 +160,8 @@ class TestScene extends Scene {
     const camX = this.cameras.main.scrollX;
 
     this.bg1.tilePositionX = camX / 5;
+    
+
     let left = false;
     let right = false;
     if (this.gamepad) {
