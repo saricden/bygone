@@ -29,7 +29,7 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 20px rgba(50, 19, 50, 0.8);
+  box-shadow: 0 0 32px rgba(50, 19, 50, 0.8);
 }
 
 .bg {
@@ -41,8 +41,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.8;
-  filter: blur(8px);
+  opacity: 0.5;
+  filter: blur(100px);
 }
 
 .dpad,

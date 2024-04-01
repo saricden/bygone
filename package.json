@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build && npx cap sync",
     "open": "npx cap open android",
-    "prep": "npx tile-extruder -i ./public/tilesets/mars.png -o ./public/tilesets/mars.png -w 16 -h 16"
+    "prep": "npx tile-extruder -i ./public/tilesets/sand-and-cave.png -o ./public/tilesets/sand-and-cave.png -w 16 -h 16"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.4",
