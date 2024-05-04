@@ -30,6 +30,8 @@ body {
   left: 50%;
   transform: translateX(-50%);
   box-shadow: 0 0 32px rgba(50, 19, 50, 0.8);
+  /* color: #BB007D;
+  color: rgb(187, 0, 125); */
 }
 
 .bg {

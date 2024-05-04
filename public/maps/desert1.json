@@ -302,6 +302,30 @@
                  "width":0,
                  "x":64,
                  "y":720
+                }, 
+                {
+                 "class":"",
+                 "height":0,
+                 "id":3,
+                 "name":"crab",
+                 "point":true,
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":304,
+                 "y":752
+                }, 
+                {
+                 "class":"",
+                 "height":0,
+                 "id":4,
+                 "name":"crab",
+                 "point":true,
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":208,
+                 "y":752
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -310,7 +334,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":3,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.9.1",

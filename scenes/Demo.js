@@ -1,27 +1,10 @@
 import { Scene, Math as pMath } from 'phaser';
+import { Crab } from '../sprites/Crab';
+import { Hero } from '../sprites/Hero';
 
 export class Demo extends Scene {
   constructor() {
     super('scene-demo');
-  }
-
-  actionA() {
-    if (this.hero.body.blocked.down) {
-      this.hero.setVelocityY(-this.jump);
-    }
-  }
-
-  actionB() {
-    if (this.hero.getData('slashing') === false) {
-      this.hero.setData('slashing', true);
-      this.hero.play({
-        key: 'hero-slash',
-        repeat: 0
-      });
-      this.hero.once('animationcomplete', () => {
-        this.hero.setData('slashing', false);
-      });
-    }
   }
 
   create() {
@@ -34,6 +17,8 @@ export class Demo extends Scene {
     const fg = map.createLayer('fg', tiles);
     const bg = map.createLayer('bg', tiles);
 
+    ground.setCollisionByProperty({ collides: true });
+
     fg.setDepth(10);
     ground.setDepth(-1);
     bg.setDepth(-5);
@@ -44,16 +29,13 @@ export class Demo extends Scene {
     bg1.setDepth(-10);
     bg1.setScale(1, 0.5);
 
-    const hero = this.physics.add.sprite(0, 0, 'hero');
-    hero.body.setSize(15, 32);
-    hero.body.offset.y = 35;
-    hero.setOrigin(0.5, 1);
-
-    hero.setData('slashing', false);
+    this.enemies = [];
 
     map.getObjectLayer('sprites').objects.forEach((obj) => {
       if (obj.name === 'hero') {
-        hero.setPosition(obj.x, obj.y);
+        const hero = new Hero(this, obj.x, obj.y);
+        this.hero = hero;
+        this.physics.add.collider(ground, this.hero);
       }
       else if (obj.name === 'hand') {
         const {x, y, width} = obj;
@@ -66,8 +48,8 @@ export class Demo extends Scene {
           const delay = pMath.Between(500, 2000);
           
           this.time.delayedCall(delay, () => {
-            if (hero.x >= x && hero.x <= x + width) {
-              hand.setX(hero.x);
+            if (this.hero.x >= x && this.hero.x <= x + width) {
+              hand.setX(this.hero.x);
               
               hand.play({
                 key: 'grab-attack',
@@ -86,16 +68,25 @@ export class Demo extends Scene {
           key: 'grab-attack',
           repeat: 0
         });
+        hand.setDepth(10);
 
+        this.enemies.push(hand);
+      }
+      else if (obj.name === 'crab') {
+        const {x, y} = obj;
+        
+        const crab = new Crab(this, x, y);
+
+        this.physics.add.collider(ground, crab);
+
+        crab.setDepth(0);
+
+        this.enemies.push(crab);
       }
     });
 
-    ground.setCollisionByProperty({ collides: true });
-
-    this.physics.add.collider(ground, hero);
-
     this.cameras.main.setZoom(3);
-    this.cameras.main.startFollow(hero);
+    this.cameras.main.startFollow(this.hero);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.setBackgroundColor(0xDDEEFF);
 
@@ -112,13 +103,11 @@ export class Demo extends Scene {
       this.gamepad = pad;
 
       this.input.gamepad.on('down', (pad, btn) => {
-        console.log(btn.index);
-
         if (btn.index === 0) {
-          this.actionA();
+          this.hero.actionA();
         }
         else if (btn.index === 1) {
-          this.actionB();
+          this.hero.actionB();
         }
       });
     });
@@ -127,10 +116,15 @@ export class Demo extends Scene {
       doc.classList.add('novirtual');
 
       if (e.key === '.') {
-        this.actionA();
+        this.hero.actionA();
       }
       else if (e.key === '/') {
-        this.actionB();
+        this.hero.actionB();
+      }
+      else if (e.key === ' ') {
+        this.game.renderer.snapshot((img) => {
+          doc.append(img);
+        });
       }
     });
 
@@ -167,82 +161,52 @@ export class Demo extends Scene {
     const bA = document.querySelector('.a');
     const bB = document.querySelector('.b');
 
-    bA.addEventListener('touchstart', () => this.actionA());
-    bB.addEventListener('touchstart', () => this.actionB());
+    bA.addEventListener('touchstart', () => this.hero.actionA());
+    bB.addEventListener('touchstart', () => this.hero.actionB());
 
     // Assign class vars
-    this.hero = hero;
     this.bg1 = bg1;
-    this.speed = 200;
-    this.jump = 400;
     this.mainCanvas = document.getElementById('game');
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.ostL1 = this.sound.add('ost-desert-top');
+    this.ostL2 = this.sound.add('ost-desert-combat', { volume: 0 });
+
+    this.scene.launch('scene-hud', { parentScene: this });
+
+    this.ostL1.play({ loop: true });
+    this.ostL2.play({ loop: true });
   }
 
   update() {
     const camX = this.cameras.main.scrollX;
 
     this.bg1.tilePositionX = camX / 5;
-    
 
-    let left = false;
-    let right = false;
-    if (this.gamepad) {
-      left = this.gamepad.left;
-      right = this.gamepad.right;
-    }
-    const {vLe, vRi, keyA, keyD} = this;
+    this.hero.update();
 
-    if (left || vLe || keyA.isDown) {
-      this.hero.setVelocityX(-this.speed);
-      if (this.hero.getData('slashing') === false) this.hero.setFlipX(true);
-    }
-    else if (right || vRi || keyD.isDown) {
-      this.hero.setVelocityX(this.speed);
-      if (this.hero.getData('slashing') === false) this.hero.setFlipX(false);
+    const dangerThreshold = 300;
+    let nearestEnemy = null;
+    let d2e = null;
+
+    this.enemies.forEach((s) => {
+      const d = pMath.Distance.Between(this.hero.x, this.hero.y, s.x, s.y);
+
+      if (d2e === null || d < d2e) {
+        nearestEnemy = s; // Don't technically need to know which enemy is the nearest yet but might be helpful
+        d2e = d;
+      }
+
+      s.update();
+    });
+
+    if (d2e < dangerThreshold) {
+      this.ostL2.setVolume(1 - (d2e / dangerThreshold));
     }
     else {
-      this.hero.setVelocityX(0);
-    }
-
-    const {x: vx, y: vy} = this.hero.body.velocity;
-    const grounded = this.hero.body.blocked.down;
-
-    if (this.hero.getData('slashing') === false) {
-      if (grounded) {
-        if (vx === 0) {
-          this.hero.play({
-            key: 'hero-idle',
-            repeat: -1
-          }, true);
-        }
-        else {
-          this.hero.play({
-            key: 'hero-run',
-            repeat: -1
-          }, true);
-        }
-      }
-      else {
-        if (vy <= 0) {
-          this.hero.play({
-            key: 'hero-jump',
-            repeat: -1
-          }, true);
-        }
-        else {
-          this.hero.play({
-            key: 'hero-fall',
-            repeat: -1
-          }, true);
-        }
-      }
-    }
-    else {
-      if (this.hero.body.velocity.y === 0) this.hero.setVelocityX(0);
+      this.ostL2.setVolume(0);
     }
   }
 }
