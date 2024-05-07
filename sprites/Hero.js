@@ -6,11 +6,13 @@ export class Hero extends Sprite {
   constructor(scene, x, y) {
     super(scene, x, y, 'hero');
     this.scene = scene;
-    this.speed = 200;
-    this.jump = 400;
+    this.speed = 120;
+    this.jump = 275;
     this.damage = 0;
     this.maxHp = 6;
     this.hp = this.maxHp;
+    this.lookingUp = false;
+    this.doUppercut = false;
 
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
@@ -28,7 +30,41 @@ export class Hero extends Sprite {
 
     this.doDoubleSlash = false;
     this.on('animationupdate', ({key}, {index}) => {
-      if (key === 'hero-slash') {
+      if (key === 'hero-run') {
+        if (index === 1) {
+          const footprint = this.scene.add.image(this.x, this.y + 3, 'footprint1');
+
+          footprint.setOrigin(0.5, 1);
+          footprint.setDepth(-1);
+          footprint.postFX.addBloom();
+
+          this.scene.tweens.add({
+            targets: [footprint],
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => {
+              footprint.destroy();
+            }
+          });
+        }
+        else if (index === 4) {
+          const footprint = this.scene.add.image(this.x, this.y + 3, 'footprint2');
+
+          footprint.setOrigin(0.5, 1);
+          footprint.setDepth(-1);
+          footprint.postFX.addBloom();
+
+          this.scene.tweens.add({
+            targets: [footprint],
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => {
+              footprint.destroy();
+            }
+          });
+        }
+      }
+      else if (key === 'hero-slash') {
         if (index === 2) {
           const dir = (this.flipX ? -1 : 1);
           const xs = 16;
@@ -63,29 +99,56 @@ export class Hero extends Sprite {
           repeat: 0
         });
       }
+      else if (key === 'hero-uppercut') {
+        this.lookingUp = false;
+        this.doUppercut = false;
+      }
       else {
         this.setData('slashing', false);
         this.doDoubleSlash = false;
       }
     });
+
+    this.hasDoubleJumped = false;
   }
 
   actionA() {
     if (this.body.blocked.down) {
       this.body.setVelocityY(-this.jump);
     }
+    else if (!this.hasDoubleJumped) {
+      this.body.setVelocityY(-this.jump);
+      this.hasDoubleJumped = true;
+
+      this.play({
+        key: 'hero-flip',
+        repeat: 0
+      }, true).chain({
+        key: 'hero-fall',
+        repeat: -1
+      }, true);
+    }
   }
 
   actionB() {
-    if (this.getData('slashing') === false) {
-      this.setData('slashing', true);
-      this.play({
-        key: 'hero-slash',
-        repeat: 0
-      });
-    }
-    else {
-      this.doDoubleSlash = true;
+    if (this.body.blocked.down) {
+      if (this.lookingUp) {
+        this.play({
+          key: 'hero-uppercut',
+          repeat: 0
+        }, true);
+        this.doUppercut = true;
+      }
+      else if (this.getData('slashing') === false) {
+        this.setData('slashing', true);
+        this.play({
+          key: 'hero-slash',
+          repeat: 0
+        });
+      }
+      else {
+        this.doDoubleSlash = true;
+      }
     }
   }
 
@@ -122,13 +185,17 @@ export class Hero extends Sprite {
       this.alpha += 0.0025;
     }
 
-    if (this.damage === 0) {
+    if (grounded) {
+      this.hasDoubleJumped = false;
+    }
+
+    if (!this.getData('slashing')) {
       if (left || vLe || keyA.isDown) {
-        this.body.setVelocityX(-this.speed);
+        if (!this.lookingUp) this.body.setVelocityX(-this.speed);
         if (this.getData('slashing') === false) this.setFlipX(true);
       }
       else if (right || vRi || keyD.isDown) {
-        this.body.setVelocityX(this.speed);
+        if (!this.lookingUp) this.body.setVelocityX(this.speed);
         if (this.getData('slashing') === false) this.setFlipX(false);
       }
       else {
@@ -136,20 +203,13 @@ export class Hero extends Sprite {
       }
     }
     else {
-
-      if (this.alpha === 1) {
-        this.damage = 0;
-      }
+      this.body.setVelocityX(0);
     }
 
-    if (this.alpha < 1) {
-      this.play({
-        key: 'hero-damage',
-        repeat: -1
-      });
-      this.body.setVelocityX(this.damage * 150);
+    if (this.doUppercut) {
+      // Do nothing lol
     }
-    else if (this.getData('slashing') === false) {
+    else if (this.getData('slashing') === false && !this.lookingUp) {
       if (grounded) {
         if (vx === 0) {
           this.play({
@@ -164,7 +224,7 @@ export class Hero extends Sprite {
           }, true);
         }
       }
-      else {
+      else if (!this.hasDoubleJumped) {
         if (vy <= 0) {
           this.play({
             key: 'hero-jump',
@@ -179,8 +239,11 @@ export class Hero extends Sprite {
         }
       }
     }
-    else {
-      if (this.body.velocity.y === 0) this.body.setVelocityX(0);
+    else if (this.lookingUp && grounded) {
+      this.play({
+        key: 'hero-lookup',
+        repeat: -1
+      }, true);
     }
   }
 }
