@@ -1,4 +1,4 @@
-import { GameObjects } from 'phaser';
+import { GameObjects, Math as pMath } from 'phaser';
 
 const {Sprite, Rectangle} = GameObjects;
 
@@ -17,7 +17,7 @@ export class Hero extends Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
 
-    this.body.setSize(15, 32);
+    this.body.setSize(11, 32);
     this.body.offset.y = 35;
     this.setOrigin(0.5, 1);
 
@@ -31,8 +31,10 @@ export class Hero extends Sprite {
     this.doDoubleSlash = false;
     this.on('animationupdate', ({key}, {index}) => {
       if (key === 'hero-run') {
-        if (index === 1) {
+        if (index === 8) {
           const footprint = this.scene.add.image(this.x, this.y + 3, 'footprint1');
+          const ri = pMath.Between(1, 3);
+          this.scene.sound.play(`sfx-step${ri}`);
 
           footprint.setOrigin(0.5, 1);
           footprint.setDepth(-1);
@@ -49,6 +51,8 @@ export class Hero extends Sprite {
         }
         else if (index === 4) {
           const footprint = this.scene.add.image(this.x, this.y + 3, 'footprint2');
+          const ri = pMath.Between(1, 3);
+          this.scene.sound.play(`sfx-step${ri}`);
 
           footprint.setOrigin(0.5, 1);
           footprint.setDepth(-1);
@@ -64,27 +68,23 @@ export class Hero extends Sprite {
           });
         }
       }
-      else if (key === 'hero-slash') {
-        if (index === 2) {
-          const dir = (this.flipX ? -1 : 1);
-          const xs = 16;
-          const ys = -12;
+      else if (key === 'hero-slash' && index === 2) {
+        const dir = (this.flipX ? -1 : 1);
+        const xs = 16;
+        const ys = -12;
 
-          this.scene.sound.play('sfx-slash1');
-  
-          this.atkb.setPosition(this.x + (dir * xs), this.y + ys);
-        }
+        this.scene.sound.play('sfx-slash1', { volume: 0.5 });
+
+        this.atkb.setPosition(this.x + (dir * xs), this.y + ys);
       }
-      else if (key === 'hero-backslash') {
-        if (index === 2) {
-          const dir = (this.flipX ? -1 : 1);
-          const xs = 16;
-          const ys = -12;
+      else if (key === 'hero-backslash' && index === 2) {
+        const dir = (this.flipX ? -1 : 1);
+        const xs = 16;
+        const ys = -12;
 
-          this.scene.sound.play('sfx-slash2');
-  
-          this.atkb.setPosition(this.x + (dir * xs), this.y + ys);
-        }
+        this.scene.sound.play('sfx-slash2', { volume: 0.5 });
+
+        this.atkb.setPosition(this.x + (dir * xs), this.y + ys);
       }
       else {
         this.atkb.setPosition(0, 0);
@@ -109,16 +109,38 @@ export class Hero extends Sprite {
       }
     });
 
+    const particleConfig = {
+      speedY: {
+        min: -50,
+        max: 50
+      },
+      speedX: {
+        min: -50,
+        max: 50
+      },
+      gravityY: 100,
+      scale: { start: 2, end: 0 },
+      alpha: [0.2, 0.5, 0.1, 0.3, 0.4, 0.9],
+      tint: 0xAF8648
+    };
     this.hasDoubleJumped = false;
+    this.jumpPfx = this.scene.add.particles(0, 0, 'px', particleConfig);
+    this.landPfx = this.scene.add.particles(0, 0, 'px', particleConfig);
+    this.wasGrounded = false;
+    this.hasLandedInitially = false;
   }
 
   actionA() {
     if (this.body.blocked.down) {
       this.body.setVelocityY(-this.jump);
+      this.jumpPfx.setPosition(this.x, this.y);
+      this.jumpPfx.explode(50);
+      this.scene.sound.play('sfx-jump');
     }
     else if (!this.hasDoubleJumped) {
       this.body.setVelocityY(-this.jump);
       this.hasDoubleJumped = true;
+      this.scene.sound.play('sfx-flip');
 
       this.play({
         key: 'hero-flip',
@@ -180,13 +202,20 @@ export class Hero extends Sprite {
     const {vLe, vRi, keyA, keyD} = this.scene;
     const {x: vx, y: vy} = this.body.velocity;
     const grounded = this.body.blocked.down;
+    const justLanded = (grounded !== this.wasGrounded);
 
     if (this.alpha < 1) {
       this.alpha += 0.0025;
     }
 
-    if (grounded) {
+    if (justLanded && this.hasLandedInitially) {
       this.hasDoubleJumped = false;
+      this.scene.sound.play('sfx-land');
+      this.landPfx.setPosition(this.x, this.y);
+      this.landPfx.explode(20);
+    }
+    else if (grounded && !this.hasLandedInitially) {
+      this.hasLandedInitially = true;
     }
 
     if (!this.getData('slashing')) {
@@ -217,7 +246,7 @@ export class Hero extends Sprite {
             repeat: -1
           }, true);
         }
-        else {
+        else if (!this.body.blocked.right && !this.body.blocked.left) {
           this.play({
             key: 'hero-run',
             repeat: -1
@@ -245,5 +274,7 @@ export class Hero extends Sprite {
         repeat: -1
       }, true);
     }
+
+    this.wasGrounded = grounded;
   }
 }

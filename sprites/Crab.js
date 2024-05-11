@@ -33,7 +33,12 @@ export class Crab extends Enemy {
             }
             else {
               const dir = (this.scene.hero.x >= this.x ? 1 : -1);
-              this.scene.hero.body.setVelocityX(dir * 100);
+              this.scene.hero.body.setVelocityX(dir * 50);
+            }
+
+            if (!this.scene.injuredCrab) {
+              this.scene.injuredCrab = true;
+              this.scene.speak('roberto', 7);
             }
           }
       );

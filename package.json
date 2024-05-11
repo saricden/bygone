@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npx cap sync",
+    "build": "vite build && vite preview",
     "open": "npx cap open android",
     "prep": "npx tile-extruder -i ./nobuild/maps/tileset2.png -o ./public/tilesets/tileset2.png -w 16 -h 16"
   },

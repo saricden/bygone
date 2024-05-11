@@ -23,6 +23,10 @@ body {
   background-color: #321332;
 }
 
+.no_cursor, .no_cursor * {
+  cursor: none !important;
+}
+
 #game {
   z-index: 2;
   position: absolute;

@@ -1,8 +1,0 @@
-{
-  "appId": "com.saricden.farzone",
-  "appName": "Farzone",
-  "webDir": "dist",
-  "server": {
-    "androidScheme": "https"
-  }
-}

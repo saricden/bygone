@@ -10,7 +10,6 @@ export class Demo extends Scene {
   create() {
     const doc = document.documentElement;
     const bgCtx = document.querySelector('.bg').getContext('2d');
-
     const map = this.add.tilemap('map');
     const tiles = map.addTilesetImage('tileset2', 'tileset2', 16, 16, 1, 2);
     const ground = map.createLayer('ground', tiles);
@@ -18,6 +17,29 @@ export class Demo extends Scene {
     const ground2 = map.createLayer('ground2', tiles);
     const ground3 = map.createLayer('ground3', tiles);
     const ground4 = map.createLayer('ground4', tiles);
+
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        this.scene.resume();
+        this.hud.scene.resume();
+        this.hud.pauseCover.setAlpha(0);
+        this.hud.playBtn.setVisible(false);
+        this.sound.setVolume(1);
+        doc.classList.add('no_cursor');
+      }
+      else {
+        this.sound.setVolume(0);
+        this.hud.pauseCover.setAlpha(0.75);
+        this.hud.playBtn.setVisible(true);
+        this.hud.scene.pause();
+        this.scene.pause();
+        doc.classList.remove('no_cursor');
+        
+        document.addEventListener('click', () => {
+          doc.requestFullscreen();
+        }, { once: true });
+      }
+    });
 
     ground.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
     ground1.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
@@ -40,7 +62,7 @@ export class Demo extends Scene {
     // Parallax mesh
     this.sand = this.add.plane(200, map.heightInPixels - 100, 'parallax');
     // this.sand.setScrollFactor(0);
-    this.sand.postFX.addBloom();
+    // this.sand.postFX.addBloom();
 
     this.sand.height = 3000;
     this.sand.width = map.widthInPixels;
@@ -54,13 +76,33 @@ export class Demo extends Scene {
 
     this.sand.setVisible(false);
 
-    const bg1 = this.add.tileSprite(0, (720 * 0.33), 720, 720, 'bg-1');
+    const bg1 = this.add.tileSprite(0, (720 * 0.45), 720, 720, 'bg-1');
     bg1.setOrigin(0, 0);
-    bg1.setScrollFactor(0);
+    bg1.setScrollFactor(0, 0.2);
     bg1.setDepth(-10);
     bg1.setScale(1, 0.5);
-    bg1.setAlpha(0.2);
-    bg1.setAlpha(0);
+    bg1.postFX.addBloom(0xE5D7AE, -5, -5, 2);
+
+    const bg2 = this.add.tileSprite(0, (720 * 0.5), 720, 720, 'bg-2');
+    bg2.setOrigin(0, 0);
+    bg2.setScrollFactor(0, 0.4);
+    bg2.setDepth(-10);
+    bg2.setScale(1, 0.5);
+    bg2.postFX.addBloom(0xE5D7AE, -5, -5, 2);
+
+    const sun = this.add.image(720 / 2 - 100, 720 / 2 - 100, 'sun');
+    sun.setDepth(-100);
+    sun.setScrollFactor(0);
+    // sun.postFX.addGlow(0xFF0000, 25, 0, false, 0.1, 100);
+    sun.postFX.addBloom(0xFFFFFF, undefined, undefined, 400);
+    sun.postFX.addBlur(0, 0, 10);
+
+    this.tweens.add({
+      targets: [sun],
+      angle: 360,
+      loop: true,
+      duration: 100000
+    });
 
     this.enemies = [];
 
@@ -115,6 +157,10 @@ export class Demo extends Scene {
         const crab = new Crab(this, x, y);
 
         this.physics.add.collider(ground, crab);
+        this.physics.add.collider(ground1, crab);
+        this.physics.add.collider(ground2, crab);
+        this.physics.add.collider(ground3, crab);
+        this.physics.add.collider(ground4, crab);
 
         crab.setDepth(0);
 
@@ -124,6 +170,20 @@ export class Demo extends Scene {
         const shipwreck = this.add.sprite(obj.x, obj.y, 'shipwreck');
         shipwreck.setOrigin(0.5, 0.89);
         shipwreck.setDepth(-1);
+      }
+      else if (obj.name === 'willow') {
+        this.willow = this.add.sprite(obj.x, obj.y, 'willow');
+        this.willow.setOrigin(0.5, 0.85);
+        this.willow.setDepth(-1);
+      }
+      else if (obj.name === 'intro-gate') {
+        this.introGate = this.physics.add.sprite(obj.x, obj.y, 'px');
+        this.introGate.setVisible(false);
+        this.introGate.setOrigin(0, 0);
+        this.introGate.setBodySize(obj.width, obj.height);
+        this.introGate.body.setAllowGravity(false);
+        this.introGate.body.setImmovable(true);
+        this.introGateCollider = this.physics.add.collider(this.hero, this.introGate);
       }
     });
 
@@ -136,14 +196,32 @@ export class Demo extends Scene {
       this.cameras.main.startFollow(this.hero);
     }
     else {
-      this.cameras.main.pan(this.hero.x, this.hero.y, 7000);
+      this.cameras.main.pan(this.hero.x, -700, 10);
+      this.time.delayedCall(20, () => {
+        this.cameras.main.pan(this.hero.x, this.hero.y, 20000, 'Linear');
+
+        this.time.delayedCall(20000, () => this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels));
+      });
+      
     }
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    this.cameras.main.setBackgroundColor(0x8899AA);
+    this.cameras.main.setBackgroundColor(0x6694B6);
 
     this.renderer.on('postrender', () => {
       bgCtx.clearRect(0, 0, 720, 720);
       bgCtx.drawImage(this.mainCanvas, 0, 0);
+    });
+
+    this.renderer.on('prerender', () => {
+      // Speaker indicator
+      if (this.speaker.getData('target') === null) {
+        this.speaker.setPosition(0, 0);
+      }
+      else {
+        const t = this.speaker.getData('target');
+        const {x, y, displayHeight} = t;
+        
+        this.speaker.setPosition(x, y - (displayHeight / 3) - 15);
+      }
     });
 
     // Controller
@@ -227,9 +305,11 @@ export class Demo extends Scene {
     // Speaking indicator
     this.speaker = this.add.image(0, 0, 'ui-speaking');
     this.speaker.setData('target', null);
+    this.speaker.setScale(0.75);
 
     // Assign class vars
     this.bg1 = bg1;
+    this.bg2 = bg2;
     this.mainCanvas = document.getElementById('game');
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -240,14 +320,17 @@ export class Demo extends Scene {
 
     this.scene.launch('scene-hud', { parentScene: this });
 
-    this.ostL1.play({ loop: true });
-    this.ostL2.play({ loop: true });
-
     this.hud = this.scene.get('scene-hud');
 
     this.roberto = this.add.sprite(this.hero.x - 200, this.hero.y + 30, 'roberto');
     this.roberto.setData('following', false);
     this.roberto.play({ key: 'roberto-fly', repeat: -1 });
+
+    this.storyStep = 1;
+    this.injuredCrab = false;
+    this.killedCrab = false;
+
+    this.sound.play('sfx-crash');
   }
 
   speak(speaker, lineNum, pause) {
@@ -256,16 +339,26 @@ export class Demo extends Scene {
         isiah: [
           "",
           "Damage report.",
-          "I said damage report!", // Get Ku to retry
+          "I said damage report!",
           "I don't have time for this.",
-          "Let's -"
+          "Let's -",
+          "Perhaps it's an outpost of some kind.",
+          "Honestly, I don't know.",
+          "It's - a tree.",
+          "Curious..."
         ],
         roberto: [
           "",
           "With all due respect sir - cool your jets.",
           "Sir please - I understand that tensions are high right now...",
           "But I advise you to take a deep breath and keep calm.",
-          "Anyways, the ship is broken."
+          "My sensors indicate very little organic life in this desert.",
+          "However there seems to be a large concentration 10km out.",
+          "Lifeform ahead - seems harmless though.",
+          "Don't bother it.",
+          "Why'd you kill it?",
+          "I wonder how its alive - all the way out here...",
+          "Why did my sensors pick it up - it looks dead."
         ]
       };
       const line = this.sound.add(`vo-${speaker}${lineNum}`);
@@ -297,41 +390,98 @@ export class Demo extends Scene {
   activateRoberto() {
     this.speak('roberto', 3, 1000)
       .then(() => {
-        this.speak('roberto', 4);
         this.cameras.main.pan(this.hero.x, this.hero.y, 100, 'Linear', false, (c, p) => {
-          (p === 1) && this.cameras.main.startFollow(this.hero);
+          if (p === 1) {
+            this.cameras.main.startFollow(this.hero);
+            this.ostL1.play({ loop: true });
+            this.ostL2.play({ loop: true });
+            this.hud.tweens.add({
+              targets: [...this.hud.hearts],
+              alpha: 1,
+              duration: 1000
+            });
+            this.introGateCollider.active = false;
+          }
         });
       });
     this.roberto.setData('following', true);
   }
 
-  update() {
+  update(time, delta) {
     const camX = this.cameras.main.scrollX;
 
     this.bg1.tilePositionX = camX / 5;
-    // this.sand.panX(-camX * 0.0001);
+    this.bg2.tilePositionX = camX / 2;
 
     this.hero.update();
+    const {x: heroX} = this.hero;
+
+    // Story stepper
+    if (this.storyStep === 1 && heroX > 400) {
+      this.storyStep++;
+      this.speak('roberto', 4, 300)
+        .then(() => this.speak('roberto', 5, 500))
+        .then(() => {
+          this.hud.distanceTo.setData('active', true);
+          this.speak('isiah', 5)
+        });
+    }
+    else if (this.storyStep === 2 && heroX > 2800) {
+      this.storyStep++;
+      this.speak('roberto', 6);
+    }
+    else if (this.storyStep === 3 && heroX > 7550) {
+      this.storyStep++;
+      this.tweens.add({
+        targets: [this.ostL1],
+        volume: 0,
+        duration: 2000
+      });
+      this.speak('isiah', 7, 1500)
+        .then(() => {
+          if (!this.killedCrab) {
+            return this.speak('roberto', 9, 3000);
+          }
+          else {
+            return this.speak('roberto', 10, 3000);
+          }
+        })
+        .then(() => this.speak('isiah', 8))
+        .then(() => {
+          this.cameras.main.stopFollow();
+          this.cameras.main.pan(this.hero.x, 0, 10000, 'Linear');
+          this.hud.tweens.add({
+            targets: [this.hud.cover],
+            alpha: 1,
+            duration: 3000,
+            onComplete: () => {
+              this.hud.tweens.add({
+                targets: [this.hud.quote1, this.hud.quote3],
+                alpha: 1,
+                duration: 3000
+              });
+              this.hud.tweens.add({
+                targets: [this.hud.quote2],
+                alpha: 1,
+                duration: 3000,
+                delay: 1000,
+                onComplete: () => {
+                  this.scene.pause();
+                }
+              });
+            }
+          });
+        });
+    }
 
     // Roberto follow
     if (this.roberto.getData('following')) {
       const speed = 0.12;
-      const dx = pMath.Interpolation.SmootherStep(speed, this.roberto.x, this.hero.x - 10);
-      const dy = pMath.Interpolation.SmootherStep(speed, this.roberto.y, this.hero.y - 20);
+      const dx = pMath.Interpolation.SmootherStep(speed, this.roberto.x, this.hero.x - 20);
+      const dy = pMath.Interpolation.SmootherStep(speed, this.roberto.y, this.hero.y - 40);
 
       this.roberto.setPosition(dx, dy);
       this.roberto.setFlipX(this.roberto.x > this.hero.x);
-    }
-
-    // Speaker indicator
-    if (this.speaker.getData('target') === null) {
-      this.speaker.setPosition(0, 0);
-    }
-    else {
-      const t = this.speaker.getData('target');
-      const {x, y, displayHeight} = t;
-      
-      this.speaker.setPosition(x, y - (displayHeight / 3) - 15);
     }
 
     // Adaptive music (distance-based)
@@ -342,7 +492,7 @@ export class Demo extends Scene {
     this.enemies.forEach((s) => {
       const d = pMath.Distance.Between(this.hero.x, this.hero.y, s.x, s.y);
 
-      if (d2e === null || d < d2e) {
+      if (s.hp !== 0 && (d2e === null || d < d2e)) {
         nearestEnemy = s; // Don't technically need to know which enemy is the nearest yet but might be helpful
         d2e = d;
       }
@@ -350,7 +500,7 @@ export class Demo extends Scene {
       s.update();
     });
 
-    if (d2e < dangerThreshold) {
+    if (d2e !== null && d2e < dangerThreshold) {
       this.ostL2.setVolume(1 - (d2e / dangerThreshold));
     }
     else {

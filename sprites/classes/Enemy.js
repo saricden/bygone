@@ -1,4 +1,4 @@
-import { GameObjects } from 'phaser';
+import { GameObjects, Math as pMath } from 'phaser';
 const {Sprite} = GameObjects;
 
 export class Enemy extends Sprite {
@@ -14,10 +14,9 @@ export class Enemy extends Sprite {
     this.pfxc = {
       speedX: 0,
       speedY: 0,
-      gravityY: 50,
-      scale: { start: 5, end: 0 },
-      // alpha: [0.2, 0.5, 0.1, 0.3, 0.4, 0.9],
-      duration: 150,
+      gravityY: -400,
+      scale: { start: 10, end: 0 },
+      alpha: [0.2, 0.5, 0.1, 0.3, 0.4, 0.9],
       // tint: 0xFFFFFF,
       frequency: 300
     };
@@ -32,6 +31,9 @@ export class Enemy extends Sprite {
         this.hp -= dmg;
         this.allowDamage = false;
       }
+
+      const ri = pMath.Between(1, 5);
+      this.scene.sound.play(`sfx-crab${ri}`, { volume: 1.5 }); // refactor me
 
       this.scene.tweens.addCounter({
         from: 0,
@@ -52,22 +54,30 @@ export class Enemy extends Sprite {
     }
     else {
       if (!this.isDead) {
+        this.scene.sound.play(`sfx-kill-crab`); // refactor me
         this.hp = 0;
         this.isDead = true;
         this.setVisible(false);
         this.pfx.setConfig({
           ...this.pfxc,
           speedY: {
-            min: -150,
-            max: 150
+            min: -50,
+            max: 50
           },
           speedX: {
-            min: -150,
-            max: 150
-          },
-          gravityY: 100
+            min: -50,
+            max: 50
+          }
         });
         this.pfx.explode(200, this.x, this.y);
+
+        this.scene.willow.setFrame(1); // Refactor me!
+        
+        if (!this.scene.killedCrab) {
+          this.scene.killedCrab = true;
+          this.scene.speak('roberto', 8, 1000)
+            .then(() => this.scene.speak('isiah', 6));
+        }
       }
     }
   }
