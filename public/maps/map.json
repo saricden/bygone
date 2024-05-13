@@ -271,8 +271,8 @@
                  "rotation":0,
                  "visible":true,
                  "width":0,
-                 "x":115.583194800595,
-                 "y":327.195435361621
+                 "x":115.583,
+                 "y":327.195
                 }, 
                 {
                  "class":"",
@@ -284,7 +284,7 @@
                  "visible":true,
                  "width":0,
                  "x":216,
-                 "y":311.197400698921
+                 "y":311.197
                 }, 
                 {
                  "class":"",
@@ -295,8 +295,8 @@
                  "rotation":0,
                  "visible":true,
                  "width":0,
-                 "x":3529.03604417824,
-                 "y":577.533364526358
+                 "x":3529.04,
+                 "y":577.533
                 }, 
                 {
                  "class":"",
@@ -307,20 +307,8 @@
                  "rotation":0,
                  "visible":true,
                  "width":0,
-                 "x":7690.47162668353,
-                 "y":600.570913679939
-                }, 
-                {
-                 "class":"",
-                 "height":0,
-                 "id":7,
-                 "name":"crab",
-                 "point":true,
-                 "rotation":0,
-                 "visible":true,
-                 "width":0,
-                 "x":5481.84494602552,
-                 "y":575.073601570167
+                 "x":7690.47,
+                 "y":600.571
                 }, 
                 {
                  "class":"",
@@ -332,6 +320,18 @@
                  "width":32,
                  "x":352,
                  "y":48
+                }, 
+                {
+                 "class":"",
+                 "height":0,
+                 "id":12,
+                 "name":"trip1",
+                 "point":true,
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":5200,
+                 "y":592
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -340,7 +340,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":12,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.9.1",

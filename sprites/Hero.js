@@ -131,45 +131,49 @@ export class Hero extends Sprite {
   }
 
   actionA() {
-    if (this.body.blocked.down) {
-      this.body.setVelocityY(-this.jump);
-      this.jumpPfx.setPosition(this.x, this.y);
-      this.jumpPfx.explode(50);
-      this.scene.sound.play('sfx-jump');
-    }
-    else if (!this.hasDoubleJumped) {
-      this.body.setVelocityY(-this.jump);
-      this.hasDoubleJumped = true;
-      this.scene.sound.play('sfx-flip');
-
-      this.play({
-        key: 'hero-flip',
-        repeat: 0
-      }, true).chain({
-        key: 'hero-fall',
-        repeat: -1
-      }, true);
+    if (!this.doUppercut) {
+      if (this.body.blocked.down) {
+        this.body.setVelocityY(-this.jump);
+        this.jumpPfx.setPosition(this.x, this.y);
+        this.jumpPfx.explode(50);
+        this.scene.sound.play('sfx-jump');
+      }
+      else if (!this.hasDoubleJumped) {
+        this.body.setVelocityY(-this.jump);
+        this.hasDoubleJumped = true;
+        this.scene.sound.play('sfx-flip');
+  
+        this.play({
+          key: 'hero-flip',
+          repeat: 0
+        }, true).chain({
+          key: 'hero-fall',
+          repeat: -1
+        }, true);
+      }
     }
   }
 
   actionB() {
-    if (this.body.blocked.down) {
-      if (this.lookingUp) {
-        this.play({
-          key: 'hero-uppercut',
-          repeat: 0
-        }, true);
-        this.doUppercut = true;
-      }
-      else if (this.getData('slashing') === false) {
-        this.setData('slashing', true);
-        this.play({
-          key: 'hero-slash',
-          repeat: 0
-        });
-      }
-      else {
-        this.doDoubleSlash = true;
+    if (!this.doUppercut) {
+      if (this.body.blocked.down) {
+        if (this.lookingUp) {
+          this.play({
+            key: 'hero-uppercut',
+            repeat: 0
+          }, true);
+          this.doUppercut = true;
+        }
+        else if (this.getData('slashing') === false) {
+          this.setData('slashing', true);
+          this.play({
+            key: 'hero-slash',
+            repeat: 0
+          });
+        }
+        else {
+          this.doDoubleSlash = true;
+        }
       }
     }
   }
@@ -218,7 +222,7 @@ export class Hero extends Sprite {
       this.hasLandedInitially = true;
     }
 
-    if (!this.getData('slashing')) {
+    if (!this.getData('slashing') && !this.doUppercut) {
       if (left || vLe || keyA.isDown) {
         if (!this.lookingUp) this.body.setVelocityX(-this.speed);
         if (this.getData('slashing') === false) this.setFlipX(true);

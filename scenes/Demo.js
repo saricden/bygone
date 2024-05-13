@@ -12,11 +12,11 @@ export class Demo extends Scene {
     const bgCtx = document.querySelector('.bg').getContext('2d');
     const map = this.add.tilemap('map');
     const tiles = map.addTilesetImage('tileset2', 'tileset2', 16, 16, 1, 2);
-    const ground = map.createLayer('ground', tiles);
-    const ground1 = map.createLayer('ground1', tiles);
-    const ground2 = map.createLayer('ground2', tiles);
-    const ground3 = map.createLayer('ground3', tiles);
-    const ground4 = map.createLayer('ground4', tiles);
+    this.ground = map.createLayer('ground', tiles);
+    this.ground1 = map.createLayer('ground1', tiles);
+    this.ground2 = map.createLayer('ground2', tiles);
+    this.ground3 = map.createLayer('ground3', tiles);
+    this.ground4 = map.createLayer('ground4', tiles);
 
     document.addEventListener('fullscreenchange', () => {
       if (document.fullscreenElement) {
@@ -41,23 +41,23 @@ export class Demo extends Scene {
       }
     });
 
-    ground.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
-    ground1.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
-    ground2.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
-    ground3.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
-    ground4.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
+    this.ground.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
+    this.ground1.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
+    this.ground2.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
+    this.ground3.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
+    this.ground4.postFX.addBloom(undefined, undefined, undefined, undefined, 2);
 
-    ground.setCollisionByProperty({ collides: true });
-    ground1.setCollisionByProperty({ collides: true });
-    ground2.setCollisionByProperty({ collides: true });
-    ground3.setCollisionByProperty({ collides: true });
-    ground4.setCollisionByProperty({ collides: true });
+    this.ground.setCollisionByProperty({ collides: true });
+    this.ground1.setCollisionByProperty({ collides: true });
+    this.ground2.setCollisionByProperty({ collides: true });
+    this.ground3.setCollisionByProperty({ collides: true });
+    this.ground4.setCollisionByProperty({ collides: true });
 
-    ground4.setDepth(-4);
-    ground3.setDepth(-5);
-    ground2.setDepth(-6);
-    ground1.setDepth(-7);
-    ground.setDepth(-8);
+    this.ground4.setDepth(-4);
+    this.ground3.setDepth(-5);
+    this.ground2.setDepth(-6);
+    this.ground1.setDepth(-7);
+    this.ground.setDepth(-8);
 
     // Parallax mesh
     this.sand = this.add.plane(200, map.heightInPixels - 100, 'parallax');
@@ -90,15 +90,15 @@ export class Demo extends Scene {
     bg2.setScale(1, 0.5);
     bg2.postFX.addBloom(0xE5D7AE, -5, -5, 2);
 
-    const sun = this.add.image(720 / 2 - 100, 720 / 2 - 100, 'sun');
-    sun.setDepth(-100);
-    sun.setScrollFactor(0);
+    this.sun = this.add.image(720 / 2 - 100, 720 / 2 - 100, 'sun');
+    this.sun.setDepth(-100);
+    this.sun.setScrollFactor(0);
     // sun.postFX.addGlow(0xFF0000, 25, 0, false, 0.1, 100);
-    sun.postFX.addBloom(0xFFFFFF, undefined, undefined, 400);
-    sun.postFX.addBlur(0, 0, 10);
+    this.sun.postFX.addBloom(0xFFFFFF, undefined, undefined, 400);
+    this.sun.postFX.addBlur(0, 0, 10);
 
     this.tweens.add({
-      targets: [sun],
+      targets: [this.sun],
       angle: 360,
       loop: true,
       duration: 100000
@@ -110,11 +110,11 @@ export class Demo extends Scene {
       if (obj.name === 'hero') {
         const hero = new Hero(this, obj.x, obj.y);
         this.hero = hero;
-        this.physics.add.collider(ground, this.hero);
-        this.physics.add.collider(ground1, this.hero);
-        this.physics.add.collider(ground2, this.hero);
-        this.physics.add.collider(ground3, this.hero);
-        this.physics.add.collider(ground4, this.hero);
+        this.physics.add.collider(this.ground, this.hero);
+        this.physics.add.collider(this.ground1, this.hero);
+        this.physics.add.collider(this.ground2, this.hero);
+        this.physics.add.collider(this.ground3, this.hero);
+        this.physics.add.collider(this.ground4, this.hero);
       }
       else if (obj.name === 'hand') {
         const {x, y, width} = obj;
@@ -156,11 +156,11 @@ export class Demo extends Scene {
         
         const crab = new Crab(this, x, y);
 
-        this.physics.add.collider(ground, crab);
-        this.physics.add.collider(ground1, crab);
-        this.physics.add.collider(ground2, crab);
-        this.physics.add.collider(ground3, crab);
-        this.physics.add.collider(ground4, crab);
+        this.physics.add.collider(this.ground, crab);
+        this.physics.add.collider(this.ground1, crab);
+        this.physics.add.collider(this.ground2, crab);
+        this.physics.add.collider(this.ground3, crab);
+        this.physics.add.collider(this.ground4, crab);
 
         crab.setDepth(0);
 
@@ -185,9 +185,18 @@ export class Demo extends Scene {
         this.introGate.body.setImmovable(true);
         this.introGateCollider = this.physics.add.collider(this.hero, this.introGate);
       }
+      else if (obj.name.startsWith('trip')) {
+        const {x, y} = obj;
+        
+        const trip = this.add.sprite(x, y, 'px');
+        trip.setVisible(false);
+        trip.setData('trip', obj.name);
+
+        this.enemies.push(trip);
+      }
     });
 
-    this.skipIntro = false;
+    this.skipIntro = true;
 
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);
@@ -317,6 +326,33 @@ export class Demo extends Scene {
     this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.ostL1 = this.sound.add('ost-desert-top', { volume: 0.5 });
     this.ostL2 = this.sound.add('ost-desert-combat', { volume: 0 });
+    this.ostL3 = this.sound.add('ost-desert-boss', { volume: 0 });
+
+    this.inEncounter = false;
+
+    this.ostL2.on('looped', () => {
+      // Adaptive music (distance-based)
+      const dangerThreshold = 300;
+      let nearest = null;
+      let d2e = null;
+
+      this.enemies.forEach((s) => {
+        const d = pMath.Distance.Between(this.hero.x, this.hero.y, s.x, s.y);
+
+        if (s.hp !== 0 && (d2e === null || d < d2e)) {
+          nearest = s;
+          d2e = d;
+        }
+
+        s.update();
+      });
+
+      if (d2e < dangerThreshold) {
+        if (!this.inEncounter && nearest !== null && nearest.getData('trip')) {
+          this.startEncounter();
+        }
+      }
+    })
 
     this.scene.launch('scene-hud', { parentScene: this });
 
@@ -331,6 +367,20 @@ export class Demo extends Scene {
     this.killedCrab = false;
 
     this.sound.play('sfx-crash');
+  }
+
+  startEncounter(tripId) {
+    this.inEncounter = true;
+
+    this.cameras.main.flash(1000);
+    this.ostL3.setVolume(0.5);
+    this.cameras.main.stopFollow();
+    this.roberto.setVisible(false);
+    this.ground.setAlpha(0.35);
+    this.cameras.main.setBackgroundColor(0xFFFFFF);
+    this.bg1.setAlpha(0.28);
+    this.bg2.setAlpha(0.11);
+    this.sun.setAlpha(0.15);
   }
 
   speak(speaker, lineNum, pause) {
@@ -395,6 +445,7 @@ export class Demo extends Scene {
             this.cameras.main.startFollow(this.hero);
             this.ostL1.play({ loop: true });
             this.ostL2.play({ loop: true });
+            this.ostL3.play({ loop: true });
             this.hud.tweens.add({
               targets: [...this.hud.hearts],
               alpha: 1,
@@ -500,7 +551,10 @@ export class Demo extends Scene {
       s.update();
     });
 
-    if (d2e !== null && d2e < dangerThreshold) {
+    if (this.inEncounter) {
+      this.ostL2.setVolume(1);
+    }
+    else if (d2e !== null && d2e < dangerThreshold) {
       this.ostL2.setVolume(1 - (d2e / dangerThreshold));
     }
     else {

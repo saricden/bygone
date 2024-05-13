@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="500" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="12">
+<map version="1.9" tiledversion="1.9.1" orientation="orthogonal" renderorder="right-down" width="500" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="13">
  <editorsettings>
   <export target="../../public/maps/map.json" format="json"/>
  </editorsettings>
@@ -569,9 +569,9 @@
   <object id="6" name="willow" x="7690.47" y="600.571">
    <point/>
   </object>
-  <object id="7" name="crab" x="5481.84" y="575.074">
+  <object id="10" name="intro-gate" x="352" y="48" width="32" height="528"/>
+  <object id="12" name="trip1" x="5200" y="592">
    <point/>
   </object>
-  <object id="10" name="intro-gate" x="352" y="48" width="32" height="528"/>
  </objectgroup>
 </map>

@@ -6,6 +6,7 @@ export class Boot extends Scene {
   }
 
   preload() {
+    this.load.setBaseURL('./');
     this.load.aseprite('hero', '/sprites/hero.png', '/sprites/hero.json');
     this.load.image('footprint1', '/sprites/footprints1.png');
     this.load.image('footprint2', '/sprites/footprints2.png');
@@ -32,6 +33,7 @@ export class Boot extends Scene {
 
     this.load.audio('ost-desert-top', '/ost/desert-top.mp3');
     this.load.audio('ost-desert-combat', '/ost/desert-combat.mp3');
+    this.load.audio('ost-desert-boss', '/ost/desert-boss.mp3');
 
     this.load.audio('sfx-slash1', '/sfx/slash1.wav');
     this.load.audio('sfx-slash2', '/sfx/slash2.wav');
