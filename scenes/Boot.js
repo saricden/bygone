@@ -12,6 +12,7 @@ export class Boot extends Scene {
     this.load.image('footprint2', '/sprites/footprints2.png');
     this.load.aseprite('roberto', '/sprites/Roberto.png', '/sprites/Roberto.json');
     this.load.aseprite('willow', '/sprites/willow.png', '/sprites/willow.json');
+    this.load.aseprite('villain', '/sprites/villain.png', '/sprites/villain.json');
 
     this.load.aseprite('hand', '/sprites/Hand.png', '/sprites/Hand.json');
     this.load.aseprite('crab', '/sprites/Crab.png', '/sprites/Crab.json');
@@ -87,6 +88,7 @@ export class Boot extends Scene {
     this.anims.createFromAseprite('roberto');
     this.anims.createFromAseprite('hand');
     this.anims.createFromAseprite('crab');
+    this.anims.createFromAseprite('villain');
 
     this.gfx.clear();
 

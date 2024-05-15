@@ -50,7 +50,7 @@ export class Enemy extends Sprite {
           }
         },
         onComplete: () => this.allowDamage = true
-      })
+      });
     }
     else {
       if (!this.isDead) {

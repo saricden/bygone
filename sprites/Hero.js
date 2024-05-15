@@ -13,6 +13,7 @@ export class Hero extends Sprite {
     this.hp = this.maxHp;
     this.lookingUp = false;
     this.doUppercut = false;
+    this.invincible = false;
 
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
@@ -92,7 +93,6 @@ export class Hero extends Sprite {
     });
 
     this.on('animationcomplete', ({key}) => {
-      console.log(this.doDoubleSlash)
       if (key === 'hero-slash' && this.doDoubleSlash) {
         this.play({
           key: 'hero-backslash',
@@ -193,6 +193,38 @@ export class Hero extends Sprite {
       else {
         this.setFlipX(false);
       }
+    }
+  }
+
+  takeDamage(dmg, dir, force) {
+    if (!this.invincible) {
+      this.invincible = true;
+      this.hp -= dmg;
+
+      this.scene.tweens.addCounter({
+        from: force,
+        to: 0,
+        duration: 200,
+        onUpdate: (tween) => {
+          const v = Math.floor(tween.getValue());
+          
+          this.body.setVelocityX(dir * v);
+        },
+        onComplete: () => this.invincible = false
+      });
+  
+      this.scene.tweens.addCounter({
+        from: 0,
+        to: 255,
+        duration: 600,
+        onUpdate: (tween) => {
+          const v = Math.floor(tween.getValue());
+          const t = Phaser.Display.Color.GetColor(255, v, v);
+  
+          this.setTint(t);
+        },
+        onComplete: () => this.invincible = false
+      });
     }
   }
 

@@ -1,6 +1,7 @@
 import { Scene, Math as pMath, Geom } from 'phaser';
 import { Crab } from '../sprites/Crab';
 import { Hero } from '../sprites/Hero';
+import { Villain } from '../sprites/Villain';
 
 export class Demo extends Scene {
   constructor() {
@@ -196,6 +197,9 @@ export class Demo extends Scene {
       }
     });
 
+    this.villain = new Villain(this, 0, 0);
+    this.villain.setVisible(false);
+
     this.skipIntro = true;
 
     this.cameras.main.setZoom(3);
@@ -203,6 +207,7 @@ export class Demo extends Scene {
 
     if (this.skipIntro) {
       this.cameras.main.startFollow(this.hero);
+      this.hero.setX(4535);
     }
     else {
       this.cameras.main.pan(this.hero.x, -700, 10);
@@ -347,10 +352,13 @@ export class Demo extends Scene {
         s.update();
       });
 
-      if (d2e < dangerThreshold) {
-        if (!this.inEncounter && nearest !== null && nearest.getData('trip')) {
+      if (!this.inEncounter && d2e < dangerThreshold) {
+        if (nearest !== null && nearest.getData('trip')) {
           this.startEncounter();
         }
+      }
+      else if (this.inEncounter) {
+        this.villain.teleport();
       }
     })
 
@@ -381,6 +389,27 @@ export class Demo extends Scene {
     this.bg1.setAlpha(0.28);
     this.bg2.setAlpha(0.11);
     this.sun.setAlpha(0.15);
+    this.villain.emerge();
+  }
+
+  endEncounter() {
+    this.inEncounter = false;
+    this.cameras.main.flash(1000);
+    this.ostL3.setVolume(0);
+    this.cameras.main.pan(this.hero.x, this.hero.y, 200, 'Lineaer', false, (c, p) => {
+      if (p === 1) {
+        this.cameras.main.startFollow(this.hero);
+      }
+    });
+    this.roberto.setVisible(true);
+    this.ground.setAlpha(1);
+    this.cameras.main.setBackgroundColor(0x6694B6);
+    this.bg1.setAlpha(1);
+    this.bg2.setAlpha(1);
+    this.sun.setAlpha(1);
+    this.villain.setAlpha(1);
+    this.villain.setVisible(false);
+    this.villain.setPosition(0, 0);
   }
 
   speak(speaker, lineNum, pause) {
@@ -465,6 +494,7 @@ export class Demo extends Scene {
     this.bg2.tilePositionX = camX / 2;
 
     this.hero.update();
+    this.villain.update();
     const {x: heroX} = this.hero;
 
     // Story stepper
