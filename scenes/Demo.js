@@ -200,7 +200,7 @@ export class Demo extends Scene {
     this.villain = new Villain(this, 0, 0);
     this.villain.setVisible(false);
 
-    this.skipIntro = true;
+    this.skipIntro = false;
 
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);
@@ -354,7 +354,7 @@ export class Demo extends Scene {
 
       if (!this.inEncounter && d2e < dangerThreshold) {
         if (nearest !== null && nearest.getData('trip')) {
-          this.startEncounter();
+          this.startEncounter(nearest);
         }
       }
       else if (this.inEncounter) {
@@ -377,8 +377,10 @@ export class Demo extends Scene {
     this.sound.play('sfx-crash');
   }
 
-  startEncounter(tripId) {
+  startEncounter(marker) {
     this.inEncounter = true;
+
+    marker.setPosition(0, 0);
 
     this.cameras.main.flash(1000);
     this.ostL3.setVolume(0.5);
@@ -410,6 +412,7 @@ export class Demo extends Scene {
     this.villain.setAlpha(1);
     this.villain.setVisible(false);
     this.villain.setPosition(0, 0);
+    this.ostL2.setVolume(0);
   }
 
   speak(speaker, lineNum, pause) {
@@ -496,6 +499,19 @@ export class Demo extends Scene {
     this.hero.update();
     this.villain.update();
     const {x: heroX} = this.hero;
+
+    // Encounter special behaviour
+    if (this.inEncounter) {
+      const {x: leftX} = this.cameras.main.worldView;
+      const rightX = leftX + (720 / 3);
+
+      if (this.hero.x < leftX) {
+        this.hero.setX(rightX);
+      }
+      else if (this.hero.x > rightX) {
+        this.hero.setX(leftX);
+      }
+    }
 
     // Story stepper
     if (this.storyStep === 1 && heroX > 400) {
@@ -585,6 +601,7 @@ export class Demo extends Scene {
       this.ostL2.setVolume(1);
     }
     else if (d2e !== null && d2e < dangerThreshold) {
+      // Idk.
       this.ostL2.setVolume(1 - (d2e / dangerThreshold));
     }
     else {

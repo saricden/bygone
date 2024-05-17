@@ -11,6 +11,7 @@ export class Villain extends Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
     this.body.setAllowGravity(false);
+    this.body.setSize(20);
     
     this.setOrigin(0.5, 0.75);
     this.atkbx = new Rectangle(scene, 0, 0, 14, 14, 0xFF0000, 0);
@@ -18,6 +19,12 @@ export class Villain extends Sprite {
     this.scene.physics.world.enable(this.atkbx);
     this.atkbx.body.setAllowGravity(false);
     this.atkbx.dmg = 0;
+
+    this.on('animationcomplete', ({key}) => {
+      if (key === 'villain-evade') {
+        this.body.setVelocityX(0);
+      }
+    });
 
     this.pfx = this.scene.add.particles(0, 0, 'px', {
       speedY: {
@@ -49,24 +56,45 @@ export class Villain extends Sprite {
 
     this.scene.physics.add.overlap(this, this.t.atkb, () => {
       if (this.visible) {
-        this.scene.tweens.addCounter({
-          from: 1,
-          to: 0,
-          duration: 200,
-          onUpdate: (tween) => {
-            const v = Math.floor(tween.getValue());
-            const dir = (this.flipX ? 1 : -1);
-            this.body.setVelocityX(dir * v * 100);
-          },
-          onComplete: () => this.invincible = false
-        });
+        // this.scene.tweens.addCounter({
+        //   from: 1,
+        //   to: 0,
+        //   duration: 200,
+        //   onUpdate: (tween) => {
+        //     const v = Math.floor(tween.getValue());
+        //     const dir = (this.flipX ? 1 : -1);
+        //     this.body.setVelocityX(dir * v * 100);
+        //   },
+        //   onComplete: () => this.invincible = false
+        // });
 
         if (this.alpha > 0) {
-          this.alpha -= 0.01;
-          const xo = pMath.Between(-20 / 2, 20 / 2);
-          const yo = pMath.Between(-44 / 2, 44 / 2);
-          this.pfx.setPosition(this.x + xo, this.y + yo);
-          this.pfx.explode(10);
+          const evadeRate = Math.floor(9 * this.alpha);
+          const doEvade = (pMath.Between(1, evadeRate) === evadeRate);
+
+          if (doEvade && this.alpha > 0.2) {
+            const dir = (Math.random() >= 0.5 ? -1 : 1);
+            this.play('villain-evade').chain({ key: 'villain-float', repeat: -1, yoyo: true });
+            this.body.setVelocityX(250 * dir);
+          }
+          else {            
+            this.alpha -= 0.05;
+            const xo = pMath.Between(-20 / 2, 20 / 2);
+            const yo = pMath.Between(-44 / 2, 44 / 2);
+            this.pfx.setPosition(this.x + xo, this.y + yo);
+            this.pfx.explode(10);
+
+            if (this.alpha > 0.2) {
+              this.play('villain-dmg').chain({ key: 'villain-float', repeat: -1, yoyo: true });
+            }
+            else if (!this.defeated) {
+              this.playReverse('villian-emerge');
+              this.defeated = true;
+            }
+          }
+        }
+        else {
+          this.alpha = 0;
         }
         this.t.atkb.setPosition(0, 0);
       }
@@ -83,11 +111,13 @@ export class Villain extends Sprite {
     });
 
     this.on('animationcomplete', ({key}) => {
-      if (key === 'villian-emerge' || key === 'villian-kick') {
+      if ((key === 'villian-emerge' || key === 'villian-kick') && this.alpha > 0.2) {
         this.play({ key: 'villain-float', repeat: -1, yoyo: true }, true);
         this.atkbx.dmg = 1;
       }
     });
+
+    this.defeated = false;
   }
 
   emerge() {
@@ -97,26 +127,34 @@ export class Villain extends Sprite {
   }
 
   teleport() {
-    const {x} = this.t;
-
-    if (this.flipX) {
-      this.setX(x - 35);
+    if (this.alpha > 0.2) {
+      const {x} = this.t;
+  
+      if (this.flipX) {
+        this.setX(x - 35);
+      }
+      else {
+        this.setX(x + 35);
+      }
+  
+      this.scene.cameras.main.flash(1000);
+      this.play('villian-kick');
     }
     else {
-      this.setX(x + 35);
+      this.scene.endEncounter();
     }
-
-    this.scene.cameras.main.flash(1000);
-    this.play('villian-kick');
   }
 
   update() {
     const {t} = this;
 
-    this.setFlipX(t.x <= this.x);
+    if (!this.defeated) {
+      this.setFlipX(t.x <= this.x);
+    }
 
     if (this.alpha <= 0) {
       this.scene.endEncounter();
+      this.scene.willow.setFrame(1); // Refactor me!
     }
   }
 }
