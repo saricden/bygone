@@ -98,7 +98,7 @@ export class Boot extends Scene {
       fontSize: 64
     }).setOrigin(0.5, 1);
 
-    this.add.text(720 / 2, 720 / 2 + 15, 'Beta 0.2', {
+    this.add.text(720 / 2, 720 / 2 + 15, '0.2 preview', {
       color: 'rgba(255, 255, 255, 0.75)',
       fontSize: 38
     }).setOrigin(0.5, 0);
