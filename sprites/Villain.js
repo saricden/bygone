@@ -23,6 +23,8 @@ export class Villain extends Sprite {
     this.on('animationcomplete', ({key}) => {
       if (key === 'villain-evade') {
         this.body.setVelocityX(0);
+        this.pfx.stopFollow();
+        this.pfx.stop();
       }
     });
 
@@ -76,6 +78,8 @@ export class Villain extends Sprite {
             const dir = (Math.random() >= 0.5 ? -1 : 1);
             this.play('villain-evade').chain({ key: 'villain-float', repeat: -1, yoyo: true });
             this.body.setVelocityX(250 * dir);
+            this.pfx.startFollow(this);
+            this.pfx.start();
           }
           else {            
             this.alpha -= 0.05;
@@ -137,6 +141,7 @@ export class Villain extends Sprite {
         this.setX(x + 35);
       }
   
+      this.body.setVelocityX(0);
       this.scene.cameras.main.flash(1000);
       this.play('villian-kick');
     }

@@ -1,6 +1,6 @@
 import './style.css';
 import { Game, WEBGL, Scale } from 'phaser';
-import { StatusBar } from '@capacitor/status-bar';
+// import { StatusBar } from '@capacitor/status-bar';
 import { Boot } from './scenes/Boot';
 import { Demo } from './scenes/Demo';
 import { Hud } from './scenes/Hud';
@@ -46,13 +46,13 @@ const config = {
   pixelArt: true
 }
 
-async function boot() {
-  try {
-    await StatusBar.hide();
-  }
-  catch (e) {
-    console.warn(e);
-  }
+function boot() {
+  // try {
+  //   await StatusBar.hide();
+  // }
+  // catch (e) {
+  //   console.warn(e);
+  // }
   new Game(config);
 }
 

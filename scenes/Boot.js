@@ -92,15 +92,15 @@ export class Boot extends Scene {
 
     this.gfx.clear();
 
-    this.add.text(720 / 2, 720 / 2 - 10, 'Begin Game', {
+    this.add.text(720 / 2, 720 / 2 - 15, 'Begin Game', {
       fontFamily: 'monospace',
       color: '#FFF',
-      fontSize: 42
+      fontSize: 64
     }).setOrigin(0.5, 1);
 
-    this.add.text(720 / 2, 720 / 2 + 10, 'Beta 0.1', {
+    this.add.text(720 / 2, 720 / 2 + 15, 'Beta 0.2', {
       color: 'rgba(255, 255, 255, 0.75)',
-      fontSize: 28
+      fontSize: 38
     }).setOrigin(0.5, 0);
 
     this.input.on('pointerup', () => {
