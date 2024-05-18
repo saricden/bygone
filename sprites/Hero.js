@@ -49,6 +49,10 @@ export class Hero extends Sprite {
               footprint.destroy();
             }
           });
+
+          if (navigator.vibrate) {
+            navigator.vibrate(100);
+          }
         }
         else if (index === 4) {
           const footprint = this.scene.add.image(this.x, this.y + 3, 'footprint2');
@@ -67,6 +71,10 @@ export class Hero extends Sprite {
               footprint.destroy();
             }
           });
+
+          if (navigator.vibrate) {
+            navigator.vibrate(100);
+          }
         }
       }
       else if (key === 'hero-slash' && index === 2) {
@@ -89,6 +97,12 @@ export class Hero extends Sprite {
       }
       else {
         this.atkb.setPosition(0, 0);
+      }
+
+      if (navigator.vibrate) {
+        if (key === 'hero-slash' || key === 'hero-backslash') {
+          navigator.vibrate(50);
+        }
       }
     });
 
@@ -150,6 +164,10 @@ export class Hero extends Sprite {
           key: 'hero-fall',
           repeat: -1
         }, true);
+      }
+
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
       }
     }
   }

@@ -304,6 +304,10 @@ export class Demo extends Scene {
 
       this.vRi = (targetEle === dRi);
       this.vLe = (targetEle === dLe);
+
+      if ((this.vRi || this.vLe) && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
     }
 
     document.addEventListener('touchstart', handlePointer);
