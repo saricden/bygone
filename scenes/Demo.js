@@ -2,6 +2,8 @@ import { Scene, Math as pMath, Geom } from 'phaser';
 import { Crab } from '../sprites/Crab';
 import { Hero } from '../sprites/Hero';
 import { Villain } from '../sprites/Villain';
+import { dlGameplayVideo, loadFFmpeg } from '../utils/ffmpeg';
+import { saveAs } from 'file-saver';
 
 export class Demo extends Scene {
   constructor() {
@@ -9,6 +11,8 @@ export class Demo extends Scene {
   }
 
   create() {
+    loadFFmpeg().then(() => console.log('FFmpeg loaded.'));
+
     const doc = document.documentElement;
     const bgCtx = document.querySelector('.bg').getContext('2d');
     const map = this.add.tilemap('map');
@@ -255,6 +259,8 @@ export class Demo extends Scene {
       });
     });
 
+    let recording = false;
+
     this.input.keyboard.on('keydown', (e) => {
       doc.classList.add('novirtual');
 
@@ -268,6 +274,9 @@ export class Demo extends Scene {
         this.game.renderer.snapshot((img) => {
           doc.append(img);
         });
+      }
+      else if (e.key === 'r' && !recording) {
+        dlGameplayVideo().then((blob) => saveAs(blob));
       }
       else if (e.key === 'w') {
         this.hero.lookingUp = true;
