@@ -2,7 +2,7 @@ import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { toBlobURL, fetchFile } from "@ffmpeg/util";
 
 
-const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
+const baseURL = "./ffmpeg/";
 const ffmpeg = new FFmpeg();
 
 const maxFrames = (1000 * 15);
