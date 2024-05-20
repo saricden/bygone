@@ -4,6 +4,7 @@ import { Game, WEBGL, Scale } from 'phaser';
 import { Boot } from './scenes/Boot';
 import { Demo } from './scenes/Demo';
 import { Hud } from './scenes/Hud';
+import { Title } from './scenes/Title';
 
 const canvas = document.getElementById('game');
 
@@ -40,6 +41,7 @@ const config = {
   },
   scene: [
     Boot,
+    Title,
     Demo,
     Hud
   ],
@@ -58,3 +60,6 @@ function boot() {
 
 boot();
 document.addEventListener('contextmenu', e => e.preventDefault());
+window.addEventListener('touchstart', () => {
+  document.documentElement.classList.remove('novirtual');
+});

@@ -309,10 +309,6 @@ export class Demo extends Scene {
       }
     });
 
-    window.addEventListener('touchstart', () => {
-      doc.classList.remove('novirtual');
-    });
-
     const dUp = document.querySelector('.up');
     this.vUp = false;
     const dRi = document.querySelector('.ri');

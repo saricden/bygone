@@ -24,6 +24,7 @@ export class Boot extends Scene {
     this.load.aseprite('ui-heart', '/sprites/ui/Heart.png', '/sprites/ui/Heart.json');
     this.load.image('ui-speaking', '/sprites/ui/speaking.png');
     this.load.image('ui-play', '/sprites/ui/play.png');
+    this.load.image('ui-temp-title', '/sprites/ui/temp-title.png');
 
     this.load.image('tileset2', '/tilesets/tileset2.png');
     // this.load.image('parallax', '/maps/parallax.png');
@@ -92,7 +93,7 @@ export class Boot extends Scene {
 
     this.gfx.clear();
 
-    this.add.text(720 / 2, 720 / 2 - 15, 'Begin Game', {
+    this.add.text(720 / 2, 720 / 2 - 15, 'Start Game', {
       fontFamily: 'monospace',
       color: '#FFF',
       fontSize: 64
@@ -106,7 +107,7 @@ export class Boot extends Scene {
     this.input.on('pointerup', () => {
       document.documentElement.requestFullscreen();
       document.documentElement.classList.add('no_cursor');
-      this.scene.start('scene-demo');
+      this.scene.start('scene-title');
     });
   }
 }
