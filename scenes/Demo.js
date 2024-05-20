@@ -2,7 +2,7 @@ import { Scene, Math as pMath, Geom } from 'phaser';
 import { Crab } from '../sprites/Crab';
 import { Hero } from '../sprites/Hero';
 import { Villain } from '../sprites/Villain';
-import { dlGameplayVideo, loadFFmpeg } from '../utils/ffmpeg';
+import { loadFFmpeg, record15Seconds, transcode } from '../utils/ffmpeg';
 import { saveAs } from 'file-saver';
 
 export class Demo extends Scene {
@@ -11,7 +11,8 @@ export class Demo extends Scene {
   }
 
   create() {
-    loadFFmpeg().then(() => console.log('FFmpeg loaded.'));
+    const btnRec = document.querySelector('.record');
+    loadFFmpeg().then(() => btnRec.classList.add('ready'));
 
     const doc = document.documentElement;
     const bgCtx = document.querySelector('.bg').getContext('2d');
@@ -261,7 +262,7 @@ export class Demo extends Scene {
 
     let recording = false;
 
-    this.input.keyboard.on('keydown', (e) => {
+    this.input.keyboard.on('keydown', async (e) => {
       doc.classList.add('novirtual');
 
       if (e.key === '.') {
@@ -276,7 +277,26 @@ export class Demo extends Scene {
         });
       }
       else if (e.key === 'r' && !recording) {
-        dlGameplayVideo().then((blob) => saveAs(blob));
+        recording = true;
+
+        const canvas = document.getElementById('game');
+        const filename = `Bygone${Date.now()}.mp4`;
+  
+        lRec.textContent = 'Recording...';
+        btnRec.classList.add('recording');
+  
+        const video = await record15Seconds(canvas);
+        lRec.textContent = 'Transcoding...';
+        btnRec.classList.remove('recording');
+        btnRec.classList.add('transcoding');
+  
+        const blob = await transcode(video.url, filename, icoRec);
+        btnRec.classList.remove('transcoding');
+        lRec.textContent = 'Done.';
+  
+        saveAs(blob);
+        
+        recording = false;
       }
       else if (e.key === 'w') {
         this.hero.lookingUp = true;
@@ -301,6 +321,33 @@ export class Demo extends Scene {
     this.vDo = false;
     const dLe = document.querySelector('.le');
     this.vLe = false;
+    const lRec = document.querySelector('.record .label');
+    const icoRec = document.querySelector('.record .circle');
+
+    btnRec.addEventListener('touchstart', async () => {
+      if (!recording) {
+        recording = true;
+
+        const canvas = document.getElementById('game');
+        const filename = `Bygone${Date.now()}.mp4`;
+  
+        lRec.textContent = 'Recording...';
+        btnRec.classList.add('recording');
+  
+        const video = await record15Seconds(canvas);
+        lRec.textContent = 'Transcoding...';
+        btnRec.classList.remove('recording');
+        btnRec.classList.add('transcoding');
+  
+        const blob = await transcode(video.url, filename, icoRec);
+        btnRec.classList.remove('transcoding');
+        lRec.textContent = 'Done.';
+  
+        saveAs(blob);
+        
+        recording = false;
+      }
+    });
 
     const handlePointer = (e) => {
       let pageX = -100;

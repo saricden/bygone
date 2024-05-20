@@ -5,10 +5,10 @@ import { toBlobURL, fetchFile } from "@ffmpeg/util";
 const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
 const ffmpeg = new FFmpeg();
 
-const maxFrames = (1000 * 10);
+const maxFrames = (1000 * 15);
 let frame = 0;
 
-function record60Seconds(canvas) {
+export function record15Seconds(canvas) {
   return new Promise((resolve) => {
     const stream = canvas.captureStream(60);
     const mediaRecorder = new MediaRecorder(stream, {
@@ -21,8 +21,6 @@ function record60Seconds(canvas) {
     mediaRecorder.ondataavailable = function (e) {
       recordedChunks.push(e.data);
       frame++;
-
-      console.log(frame);
   
       if (frame >= maxFrames) {
         mediaRecorder.stop();
@@ -41,9 +39,6 @@ function record60Seconds(canvas) {
 }
 
 export const loadFFmpeg = async () => {
-  ffmpeg.on("log", ({ message }) => {
-    console.log(message);
-  });
   // toBlobURL is used to bypass CORS issue, urls with the same
   // domain can be used directly.
   await ffmpeg.load({
@@ -59,7 +54,7 @@ export const loadFFmpeg = async () => {
   });
 };
 
-const transcode = (videoURL, filename) => {
+export const transcode = (videoURL, filename) => {
   return new Promise(async (resolve) => {
     await ffmpeg.writeFile(filename, await fetchFile(videoURL));
     await ffmpeg.exec(["-i", filename, "output.mp4"]);
@@ -72,13 +67,13 @@ const transcode = (videoURL, filename) => {
 
 
 
-export async function dlGameplayVideo() {
-  const canvas = document.getElementById('game');
-  const filename = `Bygone${Date.now()}.mp4`;
-  console.log('Begin...');
-  const video = await record60Seconds(canvas);
-  console.log('Transcoding...');
-  const blob = await transcode(video.url, filename);
+// export async function dlGameplayVideo() {
+//   const canvas = document.getElementById('game');
+//   const filename = `Bygone${Date.now()}.mp4`;
+//   console.log('Begin recording...');
+//   const video = await record15Seconds(canvas);
+//   console.log('Transcoding...');
+//   const blob = await transcode(video.url, filename);
 
-  return blob;
-}
+//   return blob;
+// }
