@@ -49,5 +49,6 @@ export class Title extends Scene {
 
     this.input.keyboard.once('keydown', begin)
     window.addEventListener('touchstart', begin, { once: true });
+    window.addEventListener('touchstart', () => document.documentElement.classList.add('virtual'));
   }
 }

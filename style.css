@@ -354,9 +354,9 @@ body {
 
 .preloaded .dpad,
 .preloaded .btns {
-  display: block;
+  display: initial;
 }
 
 .preloaded .record {
-  display: flex;
+  display: initial;
 }

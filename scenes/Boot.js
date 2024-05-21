@@ -71,17 +71,6 @@ export class Boot extends Scene {
     this.load.audio('vo-roberto9', '/vo0.1/Roberto/i wonder how its alive - all the way out here.mp3');
     this.load.audio('vo-roberto10', '/vo0.1/Roberto/why did my sensors pick it up - it looks dead.mp3');
     this.load.audio('vo-isiah8', '/vo0.1/Isiah/curious.mp3');
-    
-    this.gfx = this.add.graphics();
-    const w = 600;
-    const h = 40;
-
-    // this.load.on('progress', (v) => {
-    //   this.gfx.fillStyle(0xFFFFFF, 0.5);
-    //   this.gfx.fillRect((720 / 2) - (w / 2), 720 / 2 - (h / 2), w, h);
-    //   this.gfx.fillStyle(0xFFFFFF, 1);
-    //   this.gfx.fillRect(((720 / 2) - (w / 2)), 720 / 2 - (h / 2), w * v, h);
-    // });
 
     const preloader = document.querySelector('.preloader');
     const per = document.querySelector('.progress .percent');
@@ -101,6 +90,7 @@ export class Boot extends Scene {
       if (value === 1) {
         btn.removeAttribute('disabled');
         img.setAttribute('src', './sprites/ui/Idle.gif');
+        document.documentElement.classList.add('preloaded');
 
         btn.addEventListener('click', () => {
           document.documentElement.requestFullscreen();
@@ -118,8 +108,6 @@ export class Boot extends Scene {
     this.anims.createFromAseprite('hand');
     this.anims.createFromAseprite('crab');
     this.anims.createFromAseprite('villain');
-
-    this.gfx.clear();
 
     this.add.text(720 / 2, 720 / 2 - 15, 'Start Game', {
       fontFamily: 'monospace',
