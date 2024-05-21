@@ -108,16 +108,5 @@ export class Boot extends Scene {
     this.anims.createFromAseprite('hand');
     this.anims.createFromAseprite('crab');
     this.anims.createFromAseprite('villain');
-
-    this.add.text(720 / 2, 720 / 2 - 15, 'Start Game', {
-      fontFamily: 'monospace',
-      color: '#FFF',
-      fontSize: 64
-    }).setOrigin(0.5, 1);
-
-    this.add.text(720 / 2, 720 / 2 + 15, '0.2 preview', {
-      color: 'rgba(255, 255, 255, 0.75)',
-      fontSize: 38
-    }).setOrigin(0.5, 0);
   }
 }
