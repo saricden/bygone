@@ -4,6 +4,7 @@ import { Hero } from '../sprites/Hero';
 import { Villain } from '../sprites/Villain';
 import { loadFFmpeg, record15Seconds, transcode } from '../utils/ffmpeg';
 import { saveAs } from 'file-saver';
+import { Fire } from '../sprites/Fire';
 
 export class Demo extends Scene {
   constructor() {
@@ -199,6 +200,12 @@ export class Demo extends Scene {
         trip.setData('trip', obj.name);
 
         this.enemies.push(trip);
+      }
+      else if (obj.name === 'fire') {
+        const {x, y} = obj;
+        const {value: depth} = obj.properties[0];
+
+        const fire = new Fire(this, x, y, depth);
       }
     });
 

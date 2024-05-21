@@ -344,6 +344,42 @@
                  "width":0,
                  "x":304,
                  "y":304
+                }, 
+                {
+                 "class":"",
+                 "height":0,
+                 "id":14,
+                 "name":"fire",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"depth",
+                         "type":"int",
+                         "value":3
+                        }],
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":92.6296511429255,
+                 "y":329.508046605392
+                }, 
+                {
+                 "class":"",
+                 "height":0,
+                 "id":16,
+                 "name":"fire",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"depth",
+                         "type":"int",
+                         "value":-3
+                        }],
+                 "rotation":0,
+                 "visible":true,
+                 "width":0,
+                 "x":119.246933406225,
+                 "y":315.713944032528
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -352,7 +388,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":14,
+ "nextobjectid":17,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.9.1",

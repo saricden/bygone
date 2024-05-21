@@ -1,4 +1,5 @@
 import { Scene } from "phaser";
+import { Fire } from "../sprites/Fire";
 
 export class Title extends Scene {
   constructor() {
