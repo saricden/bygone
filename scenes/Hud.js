@@ -150,10 +150,15 @@ export class Hud extends Scene {
     }
 
     if (this.distanceTo.getData('active') === true) {
-      const {willow} = this.parentScene;
-      const {hero} = this.parentScene;
-      const d2t = pMath.Distance.Between(hero.x, hero.y, willow.x, willow.y);
-      this.distanceTo.setText((d2t / 600).toFixed(2) + 'km');
+      const {willow, hero, inEncounter} = this.parentScene;
+
+      if (!inEncounter) {
+        const d2t = pMath.Distance.Between(hero.x, hero.y, willow.x, willow.y);
+        this.distanceTo.setText((d2t / 600).toFixed(2) + 'km');
+      }
+      else {
+        this.distanceTo.setText('???km');
+      }
     }
   }
 }

@@ -56,9 +56,11 @@ function boot() {
   //   console.warn(e);
   // }
   new Game(config);
+  // canvas.style.display = 'none';
 }
 
 boot();
+
 document.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('touchstart', () => {
   document.documentElement.classList.remove('novirtual');

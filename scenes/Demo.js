@@ -15,7 +15,7 @@ export class Demo extends Scene {
     loadFFmpeg().then(() => btnRec.classList.add('ready'));
 
     const doc = document.documentElement;
-    const bgCtx = document.querySelector('.bg').getContext('2d');
+    const bgCtx = document.querySelector('body > .bg').getContext('2d');
     const map = this.add.tilemap('map');
     const tiles = map.addTilesetImage('tileset2', 'tileset2', 16, 16, 1, 2);
     this.ground = map.createLayer('ground', tiles);
@@ -247,7 +247,7 @@ export class Demo extends Scene {
     this.gamepad = null;
 
     this.input.gamepad.once('connected', (pad) => {
-      doc.classList.add('novirtual');
+      doc.classList.remove('virtual');
       this.gamepad = pad;
 
       this.input.gamepad.on('down', (pad, btn) => {
@@ -263,7 +263,7 @@ export class Demo extends Scene {
     let recording = false;
 
     this.input.keyboard.on('keydown', async (e) => {
-      doc.classList.add('novirtual');
+      doc.classList.remove('virtual');
 
       if (e.key === '.') {
         this.hero.actionA();
@@ -308,6 +308,8 @@ export class Demo extends Scene {
         this.hero.lookingUp = false;
       }
     });
+
+    window.addEventListener('touchstart', () => doc.classList.add('virtual'));
 
     const dUp = document.querySelector('.up');
     this.vUp = false;

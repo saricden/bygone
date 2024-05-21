@@ -4,9 +4,37 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+
+    <link rel="prefetch" href="sprites/ui/Run.gif" />
+    <link rel="prefetch" href="sprites/ui/Idle.gif" />
+
+    <title>Bygone</title>
   </head>
   <body>
+    <div class="preloader">
+      <div class="preloader-bg"></div>
+
+      <div class="contents">
+        <img src="./sprites/ui/Run.gif" alt="" />
+        
+        <div class="progress">
+          <div class="percent">0%</div>
+          <div class="bar-out">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <select disabled>
+          <option>Without commentary</option>
+          <option>Developer commentary</option>
+          <option>Artist commentary</option>
+          <option>Writer commentary</option>
+        </select>
+
+        <button disabled>Launch Bygone</button>
+      </div>
+    </div>
+
     <canvas id="game"></canvas>
     <canvas class="bg" width="720" height="720"></canvas>
 

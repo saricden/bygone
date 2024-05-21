@@ -41,6 +41,10 @@ export function record15Seconds(canvas) {
 export const loadFFmpeg = async () => {
   // toBlobURL is used to bypass CORS issue, urls with the same
   // domain can be used directly.
+  ffmpeg.on('progress', (prog) => {
+    console.log(prog);
+  });
+
   await ffmpeg.load({
     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
     wasmURL: await toBlobURL(
