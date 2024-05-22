@@ -112,6 +112,7 @@ export class Demo extends Scene {
     });
 
     this.enemies = [];
+    this.allSprites = [];
 
     map.getObjectLayer('sprites').objects.forEach((obj) => {
       if (obj.name === 'hero') {
@@ -122,41 +123,6 @@ export class Demo extends Scene {
         this.physics.add.collider(this.ground2, this.hero);
         this.physics.add.collider(this.ground3, this.hero);
         this.physics.add.collider(this.ground4, this.hero);
-      }
-      else if (obj.name === 'hand') {
-        const {x, y, width} = obj;
-
-        const hand = this.add.sprite(x, y, 'hand');
-
-        hand.setOrigin(0.5, 0.8);
-
-        const handGrab = () => {
-          const delay = pMath.Between(500, 2000);
-          
-          this.time.delayedCall(delay, () => {
-            if (this.hero.x >= x && this.hero.x <= x + width) {
-              hand.setX(this.hero.x);
-              
-              hand.play({
-                key: 'grab-attack',
-                repeat: 0
-              });
-            }
-            else {
-              handGrab();
-            }
-          });
-        }
-
-        hand.on('animationcomplete', () => handGrab());
-
-        hand.play({
-          key: 'grab-attack',
-          repeat: 0
-        });
-        hand.setDepth(10);
-
-        this.enemies.push(hand);
       }
       else if (obj.name === 'crab') {
         const {x, y} = obj;
@@ -172,16 +138,19 @@ export class Demo extends Scene {
         crab.setDepth(0);
 
         this.enemies.push(crab);
+        this.allSprites.push(crab);
       }
       else if (obj.name === 'shipwreck') {
         const shipwreck = this.add.sprite(obj.x, obj.y, 'shipwreck');
         shipwreck.setOrigin(0.5, 0.89);
         shipwreck.setDepth(-1);
+        this.allSprites.push(shipwreck);
       }
       else if (obj.name === 'willow') {
         this.willow = this.add.sprite(obj.x, obj.y, 'willow');
         this.willow.setOrigin(0.5, 0.85);
         this.willow.setDepth(-1);
+        this.allSprites.push(this.willow);
       }
       else if (obj.name === 'intro-gate') {
         this.introGate = this.physics.add.sprite(obj.x, obj.y, 'px');
@@ -206,6 +175,7 @@ export class Demo extends Scene {
         const {value: depth} = obj.properties[0];
 
         const fire = new Fire(this, x, y, depth);
+        this.allSprites.push(fire);
       }
     });
 
@@ -438,6 +408,8 @@ export class Demo extends Scene {
     this.killedCrab = false;
 
     this.sound.play('sfx-crash');
+
+    this.sfxAudible = new Map();
   }
 
   startEncounter(marker) {
@@ -670,5 +642,40 @@ export class Demo extends Scene {
     else {
       this.ostL2.setVolume(0);
     }
+
+    // Spatial looping sounds
+    this.allSprites.forEach((s) => {
+      if (s && s.sfxSpatialKey) {
+        const {x: camX, y: camY} = this.cameras.main.midPoint;
+        const d2s = pMath.Distance.Between(camX, camY, s.x, s.y);
+
+        if (d2s >= s.sfxSpatialThreshold) {
+          if (this.sfxAudible.has(s.sfxSpatialKey)) {
+            const sfx = this.sfxAudible.get(s.sfxSpatialKey);
+            sfx.stop();
+            sfx.destroy();
+            this.sfxAudible.delete(s.sfxSpatialKey);
+          }
+        }
+        else {
+          if (this.sfxAudible.has(s.sfxSpatialKey)) {
+            const sfx = this.sfxAudible.get(s.sfxSpatialKey);
+
+            if (typeof sfx.setVolume !== 'function') {
+              debugger;
+            }
+
+            sfx.setVolume(1 - (d2s / s.sfxSpatialThreshold));
+          }
+          else {
+            const sfx = this.sound.add(s.sfxSpatialKey, { volume: 0, loop: true });
+
+            sfx.play();
+
+            this.sfxAudible.set(s.sfxSpatialKey, sfx);
+          }
+        }
+      }
+    });
   }
 }

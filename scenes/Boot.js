@@ -52,6 +52,7 @@ export class Boot extends Scene {
     this.load.audio('sfx-crab4', '/sfx/crab4.mp3');
     this.load.audio('sfx-crab5', '/sfx/crab5.mp3');
     this.load.audio('sfx-kill-crab', '/sfx/kill-crab.mp3');
+    this.load.audio('sfx-fire-loop', '/sfx/fire-loop.mp3');
     
     this.load.audio('vo-isiah1', '/vo0.1/Isiah/damage report.mp3');
     this.load.audio('vo-isiah2', '/vo0.1/Isiah/i said damage report.mp3');

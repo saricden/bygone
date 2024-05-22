@@ -35,9 +35,14 @@ export class Fire extends Sprite {
       gravity: 10
     });
 
+    // this.pfx.postFX.addBloom(1);
+
     this.pfx.startFollow(this);
     this.pfx.start();
     
     this.pfx.setDepth(depth);
+
+    this.sfxSpatialKey = 'sfx-fire-loop';
+    this.sfxSpatialThreshold = 700;
   }
 }
