@@ -182,7 +182,7 @@ export class Demo extends Scene {
     this.villain = new Villain(this, 0, 0);
     this.villain.setVisible(false);
 
-    this.devMode = true;
+    this.devMode = false;
 
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);
