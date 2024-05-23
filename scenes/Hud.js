@@ -25,6 +25,11 @@ export class Hud extends Scene {
     this.cover.fillStyle(0x000000, 1);
     this.cover.fillRect(0, 0, 720, 720);
 
+    this.white = this.add.graphics();
+    this.white.fillStyle(0xFFFFFF);
+    this.white.fillRect(0, 0, 720, 720);
+    this.white.setAlpha(0);
+
     this.pauseCover = this.add.graphics();
     this.pauseCover.fillStyle(0x000000, 1);
     this.pauseCover.fillRect(0, 0, 720, 720);
@@ -92,7 +97,7 @@ export class Hud extends Scene {
         delay: 7000
       });
 
-      this.time.delayedCall(8000, () => this.sound.play('ost-dylbert', { volume: 0.2 }));
+      this.time.delayedCall(7000, () => this.sound.play('ost-dylbert', { volume: 0.2 }));
 
       this.tweens.add({
         targets: [introCredits],

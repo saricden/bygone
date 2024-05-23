@@ -408,6 +408,8 @@ export class Demo extends Scene {
     this.killedCrab = false;
 
     this.sfxAudible = new Map();
+
+    this.sound.play('sfx-crash');
   }
 
   startEncounter(marker) {
