@@ -80,7 +80,7 @@ export class Hud extends Scene {
     introCredits.setOrigin(0.5);
     introCredits.setAlpha(0);
 
-    if (this.parentScene.skipIntro) {
+    if (this.parentScene.devMode) {
       setTimeout(() => {
         this.parentScene.activateRoberto();
         this.cover.setAlpha(0);

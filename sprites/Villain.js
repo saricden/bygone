@@ -1,4 +1,5 @@
 import { GameObjects, Math as pMath } from "phaser";
+import { Hand } from "./Hand";
 const {Sprite, Rectangle} = GameObjects;
 
 export class Villain extends Sprite {
@@ -19,6 +20,9 @@ export class Villain extends Sprite {
     this.scene.physics.world.enable(this.atkbx);
     this.atkbx.body.setAllowGravity(false);
     this.atkbx.dmg = 0;
+
+    this.level = 1;
+    this.moveIndex = 0;
 
     this.on('animationcomplete', ({key}) => {
       if (key === 'villain-evade') {
@@ -58,18 +62,6 @@ export class Villain extends Sprite {
 
     this.scene.physics.add.overlap(this, this.t.atkb, () => {
       if (this.visible) {
-        // this.scene.tweens.addCounter({
-        //   from: 1,
-        //   to: 0,
-        //   duration: 200,
-        //   onUpdate: (tween) => {
-        //     const v = Math.floor(tween.getValue());
-        //     const dir = (this.flipX ? 1 : -1);
-        //     this.body.setVelocityX(dir * v * 100);
-        //   },
-        //   onComplete: () => this.invincible = false
-        // });
-
         if (this.alpha > 0) {
           const evadeRate = Math.floor(9 * this.alpha);
           const doEvade = (pMath.Between(1, evadeRate) === evadeRate);
@@ -131,19 +123,46 @@ export class Villain extends Sprite {
   }
 
   teleport() {
+    this.moveIndex = (this.moveIndex > 0 ? 0 : pMath.Between(0, this.level * 2));
+    // this.moveIndex = 1;
+
     if (this.alpha > 0.2) {
-      const {x} = this.t;
-  
-      if (this.flipX) {
-        this.setX(x - 35);
-      }
-      else {
-        this.setX(x + 35);
-      }
-  
       this.body.setVelocityX(0);
       this.scene.cameras.main.flash(1000);
-      this.play('villian-kick');
+      const {x, y} = this.t;
+
+      if (this.moveIndex === 0) {
+        if (this.flipX) {
+          this.setPosition(x - 35, y - 20);
+        }
+        else {
+          this.setPosition(x + 35, y - 20);
+        }
+    
+        this.play('villian-kick');
+      }
+      else if (this.moveIndex === 1) {
+        // Summon handz
+        const numHands = pMath.Between(2, 3);
+        this.setPosition(x, y - 150);
+
+        this.play({ key: 'villain-summon', repeat: -1 });
+
+        for (let i = 1; i <= numHands; i++) {
+          const delay = i * 500;
+
+          this.scene.time.delayedCall(delay, () => {
+            const {x: camX} = this.scene.cameras.main.midPoint;
+            const camW = (720 / 3);
+            const rOffset = pMath.Between(-camW / 2, camW / 2);
+
+            new Hand(this.scene, camX + rOffset, y);
+          });
+        }
+      }
+      else {
+        console.warn('Move index not implemented', this.moveIndex);
+      }
     }
     else {
       this.scene.endEncounter();
@@ -153,8 +172,15 @@ export class Villain extends Sprite {
   update() {
     const {t} = this;
 
-    if (!this.defeated) {
+    if (!this.defeated && this.moveIndex === 0) {
       this.setFlipX(t.x <= this.x);
+    }
+
+    // Moves that require an update loop
+    if (this.moveIndex === 1) {
+      const speed = 0.1;
+      const dx = pMath.Interpolation.SmootherStep(speed, this.x, t.x);
+      this.setX(dx);
     }
 
     if (this.alpha <= 0) {

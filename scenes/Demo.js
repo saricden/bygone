@@ -182,14 +182,15 @@ export class Demo extends Scene {
     this.villain = new Villain(this, 0, 0);
     this.villain.setVisible(false);
 
-    this.skipIntro = false;
+    this.devMode = true;
 
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);
 
-    if (this.skipIntro) {
+    if (this.devMode) {
       this.cameras.main.startFollow(this.hero);
       this.hero.setX(4535);
+      this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
     }
     else {
       this.cameras.main.pan(this.hero.x, -700, 10);
@@ -433,7 +434,7 @@ export class Demo extends Scene {
     this.inEncounter = false;
     this.cameras.main.flash(1000);
     this.ostL3.setVolume(0);
-    this.cameras.main.pan(this.hero.x, this.hero.y, 200, 'Lineaer', false, (c, p) => {
+    this.cameras.main.pan(this.hero.x, this.hero.y, 200, undefined, false, (c, p) => {
       if (p === 1) {
         this.cameras.main.startFollow(this.hero);
       }
@@ -505,23 +506,37 @@ export class Demo extends Scene {
   }
 
   activateRoberto() {
-    this.speak('roberto', 3, 1000)
-      .then(() => {
-        this.cameras.main.pan(this.hero.x, this.hero.y, 100, 'Linear', false, (c, p) => {
-          if (p === 1) {
-            this.cameras.main.startFollow(this.hero);
-            this.ostL1.play({ loop: true });
-            this.ostL2.play({ loop: true });
-            this.ostL3.play({ loop: true });
-            this.hud.tweens.add({
-              targets: [...this.hud.hearts],
-              alpha: 1,
-              duration: 1000
-            });
-            this.introGateCollider.active = false;
-          }
+    if (!this.devMode) {
+      this.speak('roberto', 3, 1000)
+        .then(() => {
+          this.cameras.main.pan(this.hero.x, this.hero.y, 100, 'Linear', false, (c, p) => {
+            if (p === 1) {
+              this.cameras.main.startFollow(this.hero);
+              this.ostL1.play({ loop: true });
+              this.ostL2.play({ loop: true });
+              this.ostL3.play({ loop: true });
+              this.hud.tweens.add({
+                targets: [...this.hud.hearts],
+                alpha: 1,
+                duration: 1000
+              });
+              this.introGateCollider.active = false;
+            }
+          });
         });
+    }
+    else {
+      this.ostL1.play({ loop: true });
+      this.ostL2.play({ loop: true });
+      this.ostL3.play({ loop: true });
+      this.hud.tweens.add({
+        targets: [...this.hud.hearts],
+        alpha: 1,
+        duration: 1000
       });
+      this.introGateCollider.active = false;
+      this.hud.distanceTo.setData('active', true);
+    }
     this.roberto.setData('following', true);
   }
 
@@ -549,61 +564,63 @@ export class Demo extends Scene {
     }
 
     // Story stepper
-    if (this.storyStep === 1 && heroX > 400) {
-      this.storyStep++;
-      this.speak('roberto', 4, 300)
-        .then(() => this.speak('roberto', 5, 500))
-        .then(() => {
-          this.hud.distanceTo.setData('active', true);
-          this.speak('isiah', 5)
-        });
-    }
-    else if (this.storyStep === 2 && heroX > 2800) {
-      this.storyStep++;
-      this.speak('roberto', 6);
-    }
-    else if (this.storyStep === 3 && heroX > 7550) {
-      this.storyStep++;
-      this.tweens.add({
-        targets: [this.ostL1],
-        volume: 0,
-        duration: 2000
-      });
-      this.speak('isiah', 7, 1500)
-        .then(() => {
-          if (!this.killedCrab) {
-            return this.speak('roberto', 9, 3000);
-          }
-          else {
-            return this.speak('roberto', 10, 3000);
-          }
-        })
-        .then(() => this.speak('isiah', 8))
-        .then(() => {
-          this.cameras.main.stopFollow();
-          this.cameras.main.pan(this.hero.x, 0, 10000, 'Linear');
-          this.hud.tweens.add({
-            targets: [this.hud.cover],
-            alpha: 1,
-            duration: 3000,
-            onComplete: () => {
-              this.hud.tweens.add({
-                targets: [this.hud.quote1, this.hud.quote3],
-                alpha: 1,
-                duration: 3000
-              });
-              this.hud.tweens.add({
-                targets: [this.hud.quote2],
-                alpha: 1,
-                duration: 3000,
-                delay: 1000,
-                onComplete: () => {
-                  this.scene.pause();
-                }
-              });
-            }
+    if (!this.devMode) {
+      if (this.storyStep === 1 && heroX > 400) {
+        this.storyStep++;
+        this.speak('roberto', 4, 300)
+          .then(() => this.speak('roberto', 5, 500))
+          .then(() => {
+            this.hud.distanceTo.setData('active', true);
+            this.speak('isiah', 5)
           });
+      }
+      else if (this.storyStep === 2 && heroX > 2800) {
+        this.storyStep++;
+        this.speak('roberto', 6);
+      }
+      else if (this.storyStep === 3 && heroX > 7550) {
+        this.storyStep++;
+        this.tweens.add({
+          targets: [this.ostL1],
+          volume: 0,
+          duration: 2000
         });
+        this.speak('isiah', 7, 1500)
+          .then(() => {
+            if (!this.killedCrab) {
+              return this.speak('roberto', 9, 3000);
+            }
+            else {
+              return this.speak('roberto', 10, 3000);
+            }
+          })
+          .then(() => this.speak('isiah', 8))
+          .then(() => {
+            this.cameras.main.stopFollow();
+            this.cameras.main.pan(this.hero.x, 0, 10000, 'Linear');
+            this.hud.tweens.add({
+              targets: [this.hud.cover],
+              alpha: 1,
+              duration: 3000,
+              onComplete: () => {
+                this.hud.tweens.add({
+                  targets: [this.hud.quote1, this.hud.quote3],
+                  alpha: 1,
+                  duration: 3000
+                });
+                this.hud.tweens.add({
+                  targets: [this.hud.quote2],
+                  alpha: 1,
+                  duration: 3000,
+                  delay: 1000,
+                  onComplete: () => {
+                    this.scene.pause();
+                  }
+                });
+              }
+            });
+          });
+      }
     }
 
     // Roberto follow
