@@ -92,18 +92,13 @@ export class Hud extends Scene {
         delay: 7000
       });
 
+      this.time.delayedCall(8000, () => this.sound.play('ost-dylbert', { volume: 0.2 }));
+
       this.tweens.add({
         targets: [introCredits],
         alpha: 0,
         duration: 1000,
-        delay: 7000 + 1000 + 4000
-      });
-
-      this.tweens.add({
-        targets: [this.cover, this.quote1, this.quote2, this.quote3],
-        alpha: 0,
-        duration: 4000,
-        delay: 3000,
+        delay: 7000 + 1000 + 4000,
         onComplete: () => {
           this.parentScene.speak('isiah', 1, 2000)
             .then(() => this.parentScene.speak('isiah', 2, 20))
@@ -115,6 +110,13 @@ export class Hud extends Scene {
               this.parentScene.activateRoberto();
             });
         }
+      });
+
+      this.tweens.add({
+        targets: [this.cover, this.quote1, this.quote2, this.quote3],
+        alpha: 0,
+        duration: 4000,
+        delay: 3000
       });
     }
 

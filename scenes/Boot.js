@@ -33,6 +33,7 @@ export class Boot extends Scene {
     this.load.tilemapTiledJSON('map', '/maps/map.json');
     this.load.image('sun', '/maps/sun.png');
 
+    this.load.audio('ost-dylbert', '/ost/dylbert.mp3');
     this.load.audio('ost-desert-top', '/ost/desert-top.mp3');
     this.load.audio('ost-desert-combat', '/ost/desert-combat.mp3');
     this.load.audio('ost-desert-boss', '/ost/desert-boss.mp3');

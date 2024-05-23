@@ -10,9 +10,9 @@ let frame = 0;
 
 export function record15Seconds(canvas) {
   return new Promise((resolve) => {
-    const stream = canvas.captureStream(60);
-    const mediaRecorder = new MediaRecorder(stream, {
-      mimeType: "video/webm; codecs=vp9"
+    const video = canvas.captureStream(60);
+    const mediaRecorder = new MediaRecorder(video, {
+      mimeType: "video/webm; codecs=vp9,opus"
     });
     let recordedChunks = [];
   

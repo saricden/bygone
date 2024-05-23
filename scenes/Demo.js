@@ -407,8 +407,6 @@ export class Demo extends Scene {
     this.injuredCrab = false;
     this.killedCrab = false;
 
-    this.sound.play('sfx-crash');
-
     this.sfxAudible = new Map();
   }
 
