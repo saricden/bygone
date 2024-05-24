@@ -143,7 +143,8 @@ export class Villain extends Sprite {
       }
       else if (this.moveIndex === 1) {
         // Summon handz
-        const numHands = pMath.Between(2, 3);
+        // const numHands = pMath.Between(2, 3);
+        const numHands = 3;
         this.setPosition(x, y - 150);
 
         this.play({ key: 'villain-summon', repeat: -1 });

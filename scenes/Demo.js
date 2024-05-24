@@ -182,7 +182,7 @@ export class Demo extends Scene {
     this.villain = new Villain(this, 0, 0);
     this.villain.setVisible(false);
 
-    this.devMode = false;
+    this.devMode = false && (process.env.NODE_ENV === 'development');
 
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);
@@ -411,6 +411,8 @@ export class Demo extends Scene {
     this.sfxAudible = new Map();
 
     this.sound.play('sfx-crash');
+
+    this.gameOver = false;
   }
 
   startEncounter(marker) {

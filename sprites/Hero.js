@@ -226,7 +226,7 @@ export class Hero extends Sprite {
         onUpdate: (tween) => {
           const v = Math.floor(tween.getValue());
           
-          this.body.setVelocityX(dir * v);
+          if (!this.scene.gameOver) this.body.setVelocityX(dir * v);
         },
         onComplete: () => this.invincible = false
       });
@@ -257,9 +257,34 @@ export class Hero extends Sprite {
     const {x: vx, y: vy} = this.body.velocity;
     const grounded = this.body.blocked.down;
     const justLanded = (grounded !== this.wasGrounded);
+    const doGameOverSequence = (grounded && !this.scene.gameOver && this.hp <= 0);
 
-    if (this.alpha < 1) {
-      this.alpha += 0.0025;
+    if (doGameOverSequence) {
+      this.scene.gameOver = true;
+
+      this.play('hero-blink');
+
+      this.once('animationcomplete', ({key}) => {
+        if (key === 'hero-blink') {
+          this.scene.cameras.main.zoomTo(3, 1000, undefined, undefined, (c, p) => {
+            if (p === 1) {
+              this.scene.cameras.main.pan(this.x, this.y, 300, undefined, undefined, (c, p) => {
+                if (p === 1) {
+                  this.scene.cameras.main.startFollow(this);
+                  this.scene.cameras.main.flash(1000);
+                  this.hp = this.maxHp;
+                  this.scene.gameOver = false;
+                }
+              });
+            }
+          });
+        }
+      });
+      
+      this.scene.cameras.main.stopFollow();
+      this.scene.cameras.main.pan(this.x + ((this.flipX ? -1 : 1) * 4), this.y - 22, 300);
+      this.scene.cameras.main.zoomTo(180, 700);
+      this.scene.endEncounter();
     }
 
     if (justLanded && this.hasLandedInitially) {
@@ -272,61 +297,63 @@ export class Hero extends Sprite {
       this.hasLandedInitially = true;
     }
 
-    if (!this.getData('slashing') && !this.doUppercut) {
-      if (left || vLe || keyA.isDown) {
-        if (!this.lookingUp) this.body.setVelocityX(-this.speed);
-        if (this.getData('slashing') === false) this.setFlipX(true);
-      }
-      else if (right || vRi || keyD.isDown) {
-        if (!this.lookingUp) this.body.setVelocityX(this.speed);
-        if (this.getData('slashing') === false) this.setFlipX(false);
+    if (!this.scene.gameOver) {
+      if (!this.getData('slashing') && !this.doUppercut) {
+        if (left || vLe || keyA.isDown) {
+          if (!this.lookingUp) this.body.setVelocityX(-this.speed);
+          if (this.getData('slashing') === false) this.setFlipX(true);
+        }
+        else if (right || vRi || keyD.isDown) {
+          if (!this.lookingUp) this.body.setVelocityX(this.speed);
+          if (this.getData('slashing') === false) this.setFlipX(false);
+        }
+        else {
+          this.body.setVelocityX(0);
+        }
       }
       else {
         this.body.setVelocityX(0);
       }
-    }
-    else {
-      this.body.setVelocityX(0);
-    }
 
-    if (this.doUppercut) {
-      // Do nothing lol
-    }
-    else if (this.getData('slashing') === false && !this.lookingUp) {
-      if (grounded) {
-        if (vx === 0) {
-          this.play({
-            key: 'hero-idle',
-            repeat: -1
-          }, true);
+      if (this.doUppercut) {
+        // Do nothing lol
+      }
+      else if (this.getData('slashing') === false && !this.lookingUp) {
+        if (grounded) {
+          if (vx === 0) {
+            this.play({
+              key: 'hero-idle',
+              repeat: -1
+            }, true);
+          }
+          else if (!this.body.blocked.right && !this.body.blocked.left) {
+            this.play({
+              key: 'hero-run',
+              repeat: -1
+            }, true);
+          }
         }
-        else if (!this.body.blocked.right && !this.body.blocked.left) {
-          this.play({
-            key: 'hero-run',
-            repeat: -1
-          }, true);
+        else if (!this.hasDoubleJumped) {
+          if (vy <= 0) {
+            this.play({
+              key: 'hero-jump',
+              repeat: -1
+            }, true);
+          }
+          else {
+            this.play({
+              key: 'hero-fall',
+              repeat: -1
+            }, true);
+          }
         }
       }
-      else if (!this.hasDoubleJumped) {
-        if (vy <= 0) {
-          this.play({
-            key: 'hero-jump',
-            repeat: -1
-          }, true);
-        }
-        else {
-          this.play({
-            key: 'hero-fall',
-            repeat: -1
-          }, true);
-        }
+      else if (this.lookingUp && grounded) {
+        this.play({
+          key: 'hero-lookup',
+          repeat: -1
+        }, true);
       }
-    }
-    else if (this.lookingUp && grounded) {
-      this.play({
-        key: 'hero-lookup',
-        repeat: -1
-      }, true);
     }
 
     this.wasGrounded = grounded;
