@@ -258,8 +258,21 @@ export class Hero extends Sprite {
     const grounded = this.body.blocked.down;
     const justLanded = (grounded !== this.wasGrounded);
     const doGameOverSequence = (grounded && !this.scene.gameOver && this.hp <= 0);
+    const doResetCameraFollow = (grounded && justLanded && this.scene.gameOver);
 
-    if (doGameOverSequence) {
+    if (doResetCameraFollow) {
+      this.scene.gameOver = false;
+      this.scene.cameras.main.startFollow(this);
+      this.scene.hero.hp = this.scene.hero.maxHp;
+
+      this.scene.tweens.add({
+        targets: [this.scene.roberto],
+        alpha: 1,
+        duration: 2000,
+        delay: 2000
+      });
+    }
+    else if (doGameOverSequence) {
       this.scene.gameOver = true;
 
       this.play('hero-blink');
