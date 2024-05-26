@@ -5,6 +5,7 @@ import { Boot } from './scenes/Boot';
 import { Demo } from './scenes/Demo';
 import { Hud } from './scenes/Hud';
 import { Title } from './scenes/Title';
+import { audioContext } from './utils/ffmpeg';
 
 const canvas = document.getElementById('game');
 
@@ -45,7 +46,10 @@ const config = {
     Demo,
     Hud
   ],
-  pixelArt: true
+  pixelArt: true,
+  audio: {
+    context: audioContext
+  }
 }
 
 function boot() {

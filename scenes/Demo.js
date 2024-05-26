@@ -2,7 +2,7 @@ import { Scene, Math as pMath, Geom } from 'phaser';
 import { Crab } from '../sprites/Crab';
 import { Hero } from '../sprites/Hero';
 import { Villain } from '../sprites/Villain';
-import { loadFFmpeg, record15Seconds, transcode } from '../utils/ffmpeg';
+import { loadFFmpeg, record15Seconds, transcode, audio } from '../utils/ffmpeg';
 import { saveAs } from 'file-saver';
 import { Fire } from '../sprites/Fire';
 
@@ -13,7 +13,10 @@ export class Demo extends Scene {
 
   create() {
     const btnRec = document.querySelector('.record');
-    loadFFmpeg().then(() => btnRec.classList.add('ready'));
+    loadFFmpeg().then(() => {
+      this.sound.destination.connect(audio);
+      btnRec.classList.add('ready');
+    });
 
     const doc = document.documentElement;
     const bgCtx = document.querySelector('body > .bg').getContext('2d');
@@ -183,6 +186,7 @@ export class Demo extends Scene {
     this.villain.setVisible(false);
 
     this.devMode = (process.env.NODE_ENV === 'development');
+    this.devMode = false;
 
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);

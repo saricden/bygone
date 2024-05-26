@@ -8,10 +8,21 @@ const ffmpeg = new FFmpeg();
 const maxFrames = (1000 * 15);
 let frame = 0;
 
+export const audioContext = new AudioContext();
+export const audio = audioContext.createMediaStreamDestination();
+
+audioContext.name = 'screenrecorder';
+
 export function record15Seconds(canvas) {
   return new Promise((resolve) => {
     const video = canvas.captureStream(60);
-    const mediaRecorder = new MediaRecorder(video, {
+    // const audio = recordingDestination.captureStream(60);
+    const combinedStream = new MediaStream([
+      ...video.getTracks(),
+      ...audio.stream.getTracks()
+    ]);
+
+    const mediaRecorder = new MediaRecorder(combinedStream, {
       mimeType: "video/webm; codecs=vp9,opus"
     });
     let recordedChunks = [];
@@ -42,7 +53,7 @@ export const loadFFmpeg = async () => {
   // toBlobURL is used to bypass CORS issue, urls with the same
   // domain can be used directly.
   ffmpeg.on('progress', (prog) => {
-    console.log(prog);
+    // console.log(prog);
   });
 
   await ffmpeg.load({
