@@ -1,5 +1,6 @@
 import { GameObjects, Math as pMath } from "phaser";
 import { Hand } from "./Hand";
+import { Fireball } from "./Fireball";
 const {Sprite, Rectangle} = GameObjects;
 
 export class Villain extends Sprite {
@@ -124,7 +125,7 @@ export class Villain extends Sprite {
 
   teleport() {
     this.moveIndex = (this.moveIndex > 0 ? 0 : pMath.Between(0, this.level * 2));
-    // this.moveIndex = 1;
+    // this.moveIndex = 2;
 
     if (this.alpha > 0.2) {
       this.body.setVelocityX(0);
@@ -158,6 +159,24 @@ export class Villain extends Sprite {
             const rOffset = pMath.Between(-camW / 2, camW / 2);
 
             new Hand(this.scene, camX + rOffset, y);
+          });
+        }
+      }
+      else if (this.moveIndex === 2) {
+        const numFireballs = pMath.Between(8, 16);
+        this.setPosition(x, y - 150);
+
+        this.play({ key: 'villain-summon', repeat: -1 });
+
+        for (let i = 1; i <= numFireballs; i++) {
+          const delay = i * 500;
+
+          this.scene.time.delayedCall(delay, () => {
+            const {x: camX} = this.scene.cameras.main.midPoint;
+            const camW = (720 / 3);
+            const rOffset = pMath.Between(-camW / 2, camW / 2);
+
+            new Fireball(this.scene, camX + rOffset, this.y);
           });
         }
       }
