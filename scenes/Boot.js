@@ -24,7 +24,8 @@ export class Boot extends Scene {
     this.load.aseprite('ui-heart', '/sprites/ui/Heart.png', '/sprites/ui/Heart.json');
     this.load.image('ui-speaking', '/sprites/ui/speaking.png');
     this.load.image('ui-play', '/sprites/ui/play.png');
-    this.load.image('ui-temp-title', '/sprites/ui/temp-title.png');
+    this.load.image('ui-title-bg', '/sprites/ui/title-bg.png');
+    this.load.image('ui-logo', '/sprites/ui/logo.png');
 
     this.load.image('tileset2', '/tilesets/tileset2.png');
     // this.load.image('parallax', '/maps/parallax.png');
@@ -37,6 +38,7 @@ export class Boot extends Scene {
     this.load.audio('ost-desert-top', '/ost/desert-top.mp3');
     this.load.audio('ost-desert-combat', '/ost/desert-combat.mp3');
     this.load.audio('ost-desert-boss', '/ost/desert-boss.mp3');
+    this.load.audio('ost-title', '/ost/title.mp3');
 
     this.load.audio('sfx-slash1', '/sfx/slash1.wav');
     this.load.audio('sfx-slash2', '/sfx/slash2.wav');

@@ -7,7 +7,9 @@ export class Title extends Scene {
   }
 
   create() {
-    const bg = this.add.image(0, 0, 'ui-temp-title');
+    this.sound.play('ost-title');
+    
+    const bg = this.add.image(0, 0, 'ui-title-bg');
     bg.setOrigin(0, 0);
 
     const text = this.add.text(720 / 2, 720 / 2, 'Press any button to begin.', {
@@ -18,6 +20,17 @@ export class Title extends Scene {
 
     text.setOrigin(0.5);
     text.setAlpha(0);
+
+    const logo = this.add.image(720 / 2, 125, 'ui-logo');
+    logo.setScale(0.4);
+    logo.setAlpha(0);
+    
+    this.tweens.add({
+      targets: [logo],
+      alpha: 1,
+      duration: 1500,
+      delay: 1000
+    });
 
     const cover = this.add.graphics();
 
