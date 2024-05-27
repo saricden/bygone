@@ -2,7 +2,7 @@ import { Scene, Math as pMath, Geom } from 'phaser';
 import { Crab } from '../sprites/Crab';
 import { Hero } from '../sprites/Hero';
 import { Villain } from '../sprites/Villain';
-import { loadFFmpeg, record15Seconds, transcode, audio } from '../utils/ffmpeg';
+import { loadFFmpeg, recordGameplay, transcode, audio } from '../utils/ffmpeg';
 import { saveAs } from 'file-saver';
 import { Fire } from '../sprites/Fire';
 
@@ -267,7 +267,7 @@ export class Demo extends Scene {
         lRec.textContent = 'Recording...';
         btnRec.classList.add('recording');
   
-        const video = await record15Seconds(canvas);
+        const video = await recordGameplay(canvas);
         lRec.textContent = 'Transcoding...';
         btnRec.classList.remove('recording');
         btnRec.classList.add('transcoding');
@@ -312,7 +312,7 @@ export class Demo extends Scene {
         lRec.textContent = 'Recording...';
         btnRec.classList.add('recording');
   
-        const video = await record15Seconds(canvas);
+        const video = await recordGameplay(canvas);
         lRec.textContent = 'Transcoding...';
         btnRec.classList.remove('recording');
         btnRec.classList.add('transcoding');

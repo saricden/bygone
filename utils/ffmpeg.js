@@ -5,7 +5,7 @@ import { toBlobURL, fetchFile } from "@ffmpeg/util";
 const baseURL = "./ffmpeg/";
 const ffmpeg = new FFmpeg();
 
-const maxFrames = (1000 * 15);
+const maxFrames = (1000 * 30);
 let frame = 0;
 
 export const audioContext = new AudioContext();
@@ -13,7 +13,7 @@ export const audio = audioContext.createMediaStreamDestination();
 
 audioContext.name = 'screenrecorder';
 
-export function record15Seconds(canvas) {
+export function recordGameplay(canvas) {
   return new Promise((resolve) => {
     const video = canvas.captureStream(60);
     // const audio = recordingDestination.captureStream(60);
