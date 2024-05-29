@@ -34,7 +34,6 @@ export class Demo extends Scene {
         this.hud.pauseCover.setAlpha(0);
         this.hud.playBtn.setVisible(false);
         this.sound.setVolume(1);
-        doc.classList.add('no_cursor');
       }
       else {
         this.sound.setVolume(0);
@@ -42,11 +41,6 @@ export class Demo extends Scene {
         this.hud.playBtn.setVisible(true);
         this.hud.scene.pause();
         this.scene.pause();
-        doc.classList.remove('no_cursor');
-        
-        document.addEventListener('click', () => {
-          doc.requestFullscreen();
-        }, { once: true });
       }
     });
 

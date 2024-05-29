@@ -100,8 +100,6 @@ export class Boot extends Scene {
         document.documentElement.classList.add('preloaded');
 
         btn.addEventListener('click', () => {
-          document.documentElement.requestFullscreen();
-          document.documentElement.classList.add('no_cursor');
           preloader.classList.add('off');
           this.scene.start('scene-title');
         });

@@ -69,3 +69,20 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('touchstart', () => {
   document.documentElement.classList.remove('novirtual');
 });
+
+const doc = document.documentElement;
+
+document.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    doc.requestFullscreen();
+  }
+});
+
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) {
+    doc.classList.add('no_cursor');
+  }
+  else {
+    doc.classList.remove('no_cursor');
+  }
+});

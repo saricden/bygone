@@ -19,10 +19,19 @@ export class Title extends Scene {
       });
     };
 
+    const touchUp = () => this.menuUp();
+    const touchDown = () => this.menuDown();
+    const touchEnter = () => this.menuEnter();
+    const touchBack = () => this.menuBack();
+
     const menuItems = [
       {
         label: "Play Game",
         enter: () => {
+          dUp.removeEventListener('touchstart', touchUp);
+          dDo.removeEventListener('touchstart', touchDown);
+          bA.removeEventListener('touchstart', touchEnter);
+          bB.removeEventListener('touchstart', touchBack);
           begin();
         }
       },
@@ -56,12 +65,13 @@ export class Title extends Scene {
           });
         }
       },
-      // {
-      //   label: "Support",
-      //   enter: () => {
-
-      //   }
-      // },
+      {
+        label: "Ko-Fi",
+        enter: () => {
+          const tab = window.open("https://ko-fi.com/kirkm", '_blank');
+          if (tab) tab.focus();
+        }
+      }
     ];
 
     const creditText = this.add.text(720 / 2, 720 / 2, credits, {
@@ -178,10 +188,10 @@ export class Title extends Scene {
     const bA = document.querySelector('.a');
     const bB = document.querySelector('.b');
 
-    dUp.addEventListener('touchstart', () => this.menuUp());
-    dDo.addEventListener('touchstart', () => this.menuDown());
-    bA.addEventListener('touchstart', () => this.menuEnter());
-    bB.addEventListener('touchstart', () => this.menuBack());
+    dUp.addEventListener('touchstart', touchUp);
+    dDo.addEventListener('touchstart', touchDown);
+    bA.addEventListener('touchstart', touchEnter);
+    bB.addEventListener('touchstart', touchBack);
   }
 
   menuUp() {
