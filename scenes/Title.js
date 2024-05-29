@@ -27,12 +27,6 @@ export class Title extends Scene {
         }
       },
       {
-        label: "Settings",
-        enter: () => {
-
-        }
-      },
-      {
         label: "Credits",
         enter: () => {
           this.tweens.add({
@@ -61,7 +55,13 @@ export class Title extends Scene {
             duration: 500
           });
         }
-      }
+      },
+      // {
+      //   label: "Support",
+      //   enter: () => {
+
+      //   }
+      // },
     ];
 
     const creditText = this.add.text(720 / 2, 720 / 2, credits, {
@@ -164,10 +164,30 @@ export class Title extends Scene {
         this.menuDown();
       }
     });
+
+    const mainCanvas = document.getElementById('game');
+    const bgCtx = document.querySelector('body > .bg').getContext('2d');
+    this.renderer.on('postrender', () => {
+      bgCtx.clearRect(0, 0, 720, 720);
+      bgCtx.drawImage(mainCanvas, 0, 0);
+    });
+
+    // Touch controls
+    const dUp = document.querySelector('.up');
+    const dDo = document.querySelector('.do');
+    const bA = document.querySelector('.a');
+    const bB = document.querySelector('.b');
+
+    dUp.addEventListener('touchstart', () => this.menuUp());
+    dDo.addEventListener('touchstart', () => this.menuDown());
+    bA.addEventListener('touchstart', () => this.menuEnter());
+    bB.addEventListener('touchstart', () => this.menuBack());
   }
 
   menuUp() {
     if (this.menuUnlocked) {
+      this.sound.play('sfx-menu-nav');
+
       if (this.menuIndex === 0) {
         this.menuIndex = this.menuBtns.length - 1;
       }
@@ -179,6 +199,8 @@ export class Title extends Scene {
 
   menuDown() {
     if (this.menuUnlocked) {
+      this.sound.play('sfx-menu-nav');
+
       if (this.menuIndex === this.menuBtns.length - 1) {
         this.menuIndex = 0;
       }
@@ -190,13 +212,21 @@ export class Title extends Scene {
 
   menuEnter() {
     if (this.menuUnlocked) {
-      this.menuBtns[this.menuIndex].getData('enter')();
+      const fn = this.menuBtns[this.menuIndex].getData('enter');
+      if (fn) {
+        this.sound.play('sfx-menu-enter');
+        fn();
+      }
     }
   }
 
   menuBack() {
     if (this.menuUnlocked) {
-      this.menuBtns[this.menuIndex].getData('back')();
+      const fn = this.menuBtns[this.menuIndex].getData('back');
+      if (fn) {
+        this.sound.play('sfx-menu-back');
+        fn();
+      }
     }
   }
 

@@ -19,7 +19,6 @@ export class Demo extends Scene {
     });
 
     const doc = document.documentElement;
-    const bgCtx = document.querySelector('body > .bg').getContext('2d');
     const map = this.add.tilemap('map');
     const tiles = map.addTilesetImage('tileset2', 'tileset2', 16, 16, 1, 2);
     this.ground = map.createLayer('ground', tiles);
@@ -207,11 +206,6 @@ export class Demo extends Scene {
     }
     this.cameras.main.setBackgroundColor(0x6694B6);
 
-    this.renderer.on('postrender', () => {
-      bgCtx.clearRect(0, 0, 720, 720);
-      bgCtx.drawImage(this.mainCanvas, 0, 0);
-    });
-
     this.renderer.on('prerender', () => {
       // Speaker indicator
       if (this.speaker.getData('target') === null) {
@@ -362,7 +356,6 @@ export class Demo extends Scene {
     // Assign class vars
     this.bg1 = bg1;
     this.bg2 = bg2;
-    this.mainCanvas = document.getElementById('game');
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
