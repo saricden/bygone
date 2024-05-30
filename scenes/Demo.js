@@ -179,14 +179,17 @@ export class Demo extends Scene {
     this.villain.setVisible(false);
 
     this.devMode = (process.env.NODE_ENV === 'development');
-    this.devMode = false;
-
+    // this.devMode = false;
+    const devMarker = map.getObjectLayer('sprites').objects.find((obj) => obj.name === 'devMode');
+    this.devStartX = devMarker.x;
+    this.devStartY = devMarker.y;
+    
     this.cameras.main.setZoom(3);
     // this.cameras.main.setZoom(1);
 
     if (this.devMode) {
       this.cameras.main.startFollow(this.hero);
-      this.hero.setX(4535);
+      this.hero.setPosition(this.devStartX, this.devStartY);
       this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
     }
     else {
@@ -414,13 +417,22 @@ export class Demo extends Scene {
     this.cameras.main.flash(1000);
     this.ostL3.setVolume(0.5);
     this.cameras.main.stopFollow();
+
+    let {y: camY} = this.cameras.main.midPoint;
+
+    // Magic numbers ftw
+    if (camY !== 520) {
+      camY -= 85;
+    }
+
+    this.cameras.main.pan(this.hero.x, camY);
     this.roberto.setVisible(false);
     this.ground.setAlpha(0.35);
     this.cameras.main.setBackgroundColor(0xFFFFFF);
     this.bg1.setAlpha(0.28);
     this.bg2.setAlpha(0.11);
     this.sun.setAlpha(0.15);
-    this.villain.emerge();
+    this.villain.emerge(marker.getData('trip'));
   }
 
   endEncounter() {
@@ -571,7 +583,7 @@ export class Demo extends Scene {
         this.storyStep++;
         this.speak('roberto', 6);
       }
-      else if (this.storyStep === 3 && heroX > 7550) {
+      else if (this.storyStep === 3 && heroX > 10000) {
         this.storyStep++;
         this.tweens.add({
           targets: [this.ostL1],

@@ -6,7 +6,8 @@ export class Crab extends Enemy {
     super(scene, x, y, 'crab', 10);
 
     this.state = 'move';
-    this.direction = -1;
+    this.direction = (Math.random() > 0.5 ? -1 : 1);
+    if (this.direction === 1) this.setFlipX(true);
     this.prevDirection = -1;
     this.speed = 30;
     
