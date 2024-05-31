@@ -412,8 +412,6 @@ export class Demo extends Scene {
   startEncounter(marker) {
     this.inEncounter = true;
 
-    marker.setPosition(0, 0);
-
     this.cameras.main.flash(1000);
     this.ostL3.setVolume(0.5);
     this.cameras.main.stopFollow();
@@ -432,7 +430,9 @@ export class Demo extends Scene {
     this.bg1.setAlpha(0.28);
     this.bg2.setAlpha(0.11);
     this.sun.setAlpha(0.15);
-    this.villain.emerge(marker.getData('trip'));
+    this.villain.emerge(marker);
+
+    marker.setPosition(0, 0);
   }
 
   endEncounter() {

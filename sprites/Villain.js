@@ -124,12 +124,17 @@ export class Villain extends Sprite {
     });
 
     this.defeated = false;
+    this.tripX = 0;
+    this.tripY = 0;
   }
 
-  emerge(trip) {
+  emerge(tripMarker) {
 
-    if (trip === 'trip1') this.level = 1;
-    else if (trip === 'trip2') this.level = 2;
+    if (tripMarker.getData('trip') === 'trip1') this.level = 1;
+    else if (tripMarker.getData('trip') === 'trip2') this.level = 2;
+
+    this.baseX = tripMarker.x;
+    this.baseY = tripMarker.y;
     
     this.setVisible(true);
     this.setPosition(this.t.x, this.t.y - 20);
@@ -145,7 +150,8 @@ export class Villain extends Sprite {
     if (this.alpha > 0.2) {
       this.body.setVelocityX(0);
       this.scene.cameras.main.flash(1000);
-      const {x, y} = this.t;
+      const x = this.t.x;
+      const y = this.baseY;
 
       if (this.moveIndex === 0) {
         if (this.flipX) {
